@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>国漫 · 日漫 时间表 | 新番放送时间查询</title>
+<meta name="description" content="免费在线查看国漫与日漫新番放送时间表:按周几分组展示正在连载的日本动画与中国动画,含下一话更新时间、封面与简介,一键跳转班固米、哔哩哔哩、MyAnimeList、AniList 核对详情。">
+<meta name="keywords" content="动漫时间表,新番时间表,国漫时间表,日漫时间表,追番,放送时间,anime schedule">
+<meta name="robots" content="index,follow">
+<meta property="og:type" content="website">
+<meta property="og:title" content="国漫 · 日漫 时间表">
+<meta property="og:description" content="免费查看国漫与日漫新番放送时间、封面与简介,支持搜索与站外直达。">
+<meta property="og:locale" content="zh_CN">
+<meta name="theme-color" content="#d8433f">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png">
+<link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="追番时间表">
+<style>
+  :root {
+    --bg: #f5f6f8;
+    --card: #ffffff;
+    --line: #e3e5ea;
+    --text: #23272f;
+    --sub: #6b7280;
+    --accent: #d8433f;
+    --ri: #c2660a;
+    --guo: #1f8a4c;
+    --tag-bg: #f0f1f4;
+    --shadow: 0 1px 3px rgba(0,0,0,.08);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #131519;
+      --card: #1e2128;
+      --line: #33363f;
+      --text: #e7e9ee;
+      --sub: #9aa1ad;
+      --accent: #ff6b64;
+      --ri: #e8a04a;
+      --guo: #55c887;
+      --tag-bg: #2a2e37;
+      --shadow: 0 1px 3px rgba(0,0,0,.35);
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font: 14px/1.6 -apple-system, "Segoe UI", "Microsoft YaHei", "PingFang SC", sans-serif;
+  }
+  .wrap { max-width: 1000px; margin: 0 auto; padding: 22px 16px 60px; }
+  header.top { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; flex-wrap: wrap; }
+  h1 { font-size: 21px; margin: 0 0 4px; }
+  .sub { color: var(--sub); font-size: 12.5px; margin: 0; line-height: 1.7; }
+  .btn {
+    border: 1px solid var(--line); background: var(--card); color: var(--text);
+    border-radius: 9px; padding: 7px 16px; font-size: 13px; cursor: pointer;
+  }
+  .btn:disabled { opacity: .55; cursor: default; }
+  .chips { display: flex; gap: 8px; flex-wrap: wrap; margin: 14px 0 4px; }
+  .chip {
+    font-size: 12.5px; color: var(--text); text-decoration: none;
+    border: 1px solid var(--line); background: var(--card); border-radius: 999px; padding: 4px 12px;
+  }
+  .chip small { color: var(--sub); margin-left: 4px; }
+  .chip:hover { border-color: var(--accent); }
+  .bar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 14px 0 6px; }
+  .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 9px; overflow: hidden; }
+  .seg button {
+    border: 0; background: transparent; color: var(--sub); padding: 6px 16px; font-size: 13px; cursor: pointer; font-family: inherit;
+  }
+  .seg button.on { background: var(--tag-bg); color: var(--text); font-weight: 600; }
+  .sect { display: flex; align-items: baseline; gap: 8px; margin: 20px 0 6px; font-size: 16px; font-weight: 700; border-bottom: 2px solid var(--line); padding-bottom: 4px; }
+  .sect .scount { font-size: 12px; color: var(--sub); font-weight: 400; margin-left: 2px; }
+  .grp { display: flex; align-items: baseline; gap: 8px; margin: 15px 0 4px; font-size: 13px; font-weight: 700; color: var(--text); border-left: 3px solid var(--accent); padding-left: 8px; }
+  .grp .gcount { font-size: 11px; color: var(--sub); font-weight: 400; }
+  .favbar { display: flex; gap: 8px; flex-wrap: wrap; margin: 10px 0 2px; }
+  .favbar .btn { font-size: 12px; padding: 5px 12px; }
+  .favbar .btn.on { border-color: var(--accent); color: var(--accent); }
+  .acts .fav { font-size: 15px; line-height: 1; padding: 0 2px; }
+  .acts .fav.on { color: #f0b90b; }
+  input.search {
+    flex: 1; min-width: 180px; border: 1px solid var(--line); background: var(--card); color: var(--text);
+    border-radius: 9px; padding: 7px 12px; font-size: 13px; outline: none;
+  }
+  .srcrow { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 2px 0 4px; font-size: 12px; color: var(--sub); }
+  .srcrow .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+  .msg { padding: 26px 4px; color: var(--sub); font-size: 13.5px; line-height: 1.8; }
+  .msg.err { color: var(--accent); }
+  .day { margin: 18px 0 6px; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  .day .dn { font-size: 15px; font-weight: 700; }
+  .day .dn.today { color: var(--accent); }
+  .day .dm { font-size: 12px; color: var(--sub); }
+  .card {
+    border: 1px solid var(--line); background: var(--card); border-radius: 12px;
+    padding: 12px 14px; margin: 9px 0; box-shadow: var(--shadow);
+  }
+  .row { display: flex; gap: 13px; align-items: flex-start; }
+  .cover { width: 72px; height: 100px; object-fit: cover; border-radius: 7px; flex: none; background: var(--tag-bg); display: block; }
+  .main { flex: 1; min-width: 0; }
+  .tt { font-size: 15px; font-weight: 700; margin: 0; word-break: break-word; }
+  .tt-sub { font-size: 12px; color: var(--sub); margin: 1px 0 0; word-break: break-word; }
+  .tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+  .tag { font-size: 11px; padding: 1px 9px; border-radius: 999px; background: var(--tag-bg); color: var(--sub); border: 1px solid var(--line); }
+  .tag.ri { color: var(--ri); }
+  .tag.guo { color: var(--guo); }
+  .tag.now { color: var(--accent); border-color: transparent; font-weight: 600; }
+  .meta { font-size: 12.5px; color: var(--sub); margin: 7px 0 0; }
+  .meta b { color: var(--text); font-weight: 600; }
+  .acts { display: flex; align-items: center; gap: 12px; flex: none; padding-top: 2px; }
+  .acts a { color: var(--accent); font-size: 12.5px; text-decoration: none; }
+  .acts button {
+    border: 0; background: none; color: var(--accent); font-size: 12.5px; cursor: pointer; padding: 2px 0; font-family: inherit;
+  }
+  .desc {
+    margin: 11px 0 0; border-top: 1px dashed var(--line); padding-top: 9px;
+    font-size: 13px; color: var(--sub); line-height: 1.75;
+  }
+  .desc.clamp { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .ext { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 9px; font-size: 12.5px; }
+  .ext a { color: var(--accent); text-decoration: none; }
+  .foot { margin-top: 26px; font-size: 11.5px; color: var(--sub); line-height: 1.8; }
+  .loading { display: inline-block; width: 14px; height: 14px; border: 2px solid var(--line); border-top-color: var(--accent); border-radius: 50%; animation: spin .8s linear infinite; vertical-align: -2px; margin-right: 8px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1>国漫 · 日漫 时间表</h1>
+      <p class="sub">免费追番小工具 · 多数据源自动切换(哔哩哔哩 / AniList) · 支持星期表 / 类型分类视图(日漫·国漫分开,按战斗/奇幻/恋爱等类型归类)</p>
+    </div>
+    <button class="btn" id="refreshBtn">刷新数据</button>
+  </header>
+
+  <div class="srcrow" id="srcRow"></div>
+  <div class="chips" id="siteChips"></div>
+
+  <div class="favbar" id="favBar">
+    <button class="btn" id="favToggle" type="button" title="只显示你收藏的番剧">☆ 我的收藏(0)</button>
+    <button class="btn" id="favExport" type="button" title="把收藏保存成文件,可用于换设备/换软件版导入">导出收藏</button>
+    <button class="btn" id="favImport" type="button" title="从文件导入收藏(与现有收藏合并)">导入收藏</button>
+    <input type="file" id="favFile" accept=".json,application/json" style="display:none">
+  </div>
+
+  <div class="bar">
+    <div class="seg" id="segMode"></div>
+    <div class="seg" id="seg"></div>
+    <input class="search" id="search" type="search" placeholder="搜索片名…">
+  </div>
+
+  <div id="status"></div>
+  <div id="list"></div>
+
+  <p class="foot">
+    数据说明:本页优先使用哔哩哔哩番剧时间线(国内可达,若其接口允许浏览器跨域);若失败则自动改用 AniList 公开接口(海外可达、支持跨域)。
+    仅收录正在连载的 TV/ONA 动画,区分 日漫(番剧区/JP)与 国漫(国创区/CN);时间为最近一次/下一话更新时间。
+    若两个数据源都不可用,多为当前网络限制跨域或无法访问国外接口 —— 可用上方站点直达按钮前往班固米/哔哩哔哩/MAL 等网站查看。
+    本站为个人学习项目,数据来自公开接口(AniList / 哔哩哔哩),封面与简介版权归原作者及平台所有;
+    本站不存储、不提供任何盗版资源与下载链接,如涉侵权请联系删除。
+  </p>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var WEEK_NAMES = ["周一", "周二", "周三", "周四", "周五", "周六", "周日"];
+  var DAY_CN = { 1: "周一", 2: "周二", 3: "周三", 4: "周四", 5: "周五", 6: "周六", 7: "周日" };
+
+  var SITES = [
+    { name: "哔哩哔哩 · 番剧时间表", url: "https://www.bilibili.com/anime/timeline" },
+    { name: "班固米 · 放送日历", url: "https://bgm.tv/calendar" },
+    { name: "AniChart(新番表)", url: "https://anichart.net" },
+    { name: "LiveChart(日漫排期)", url: "https://www.livechart.me/schedule" },
+    { name: "MyAnimeList · 本季", url: "https://myanimelist.net/anime/season" },
+    { name: "AniList · 本季", url: "https://anilist.co/search/anime?format=TV&status=RELEASING" }
+  ];
+
+  var el = {
+    srcRow: document.getElementById("srcRow"),
+    siteChips: document.getElementById("siteChips"),
+    segMode: document.getElementById("segMode"),
+    seg: document.getElementById("seg"),
+    search: document.getElementById("search"),
+    status: document.getElementById("status"),
+    list: document.getElementById("list"),
+    refreshBtn: document.getElementById("refreshBtn"),
+    favToggle: document.getElementById("favToggle"),
+    favExport: document.getElementById("favExport"),
+    favImport: document.getElementById("favImport"),
+    favFile: document.getElementById("favFile")
+  };
+
+  var state = {
+    items: [],
+    filter: "all",
+    mode: "week", // week=按星期 | type=按类型
+    query: "",
+    expanded: {},
+    loading: false,
+    source: "",
+    translated: {},
+    onlyFav: false, // 只看收藏
+    favs: {} // id -> {id,title,titleSub,kind,kindLabel,cover,watchUrl}
+  };
+
+  // ---------- 收藏(本地保存 + 文件导入导出,便于网页版/软件版互通) ----------
+  var FAV_KEY = "animeScheduleFavs.v1";
+  function loadFavs() {
+    try {
+      var raw = localStorage.getItem(FAV_KEY);
+      if (raw) state.favs = JSON.parse(raw) || {};
+    } catch (e) { state.favs = {}; }
+    if (typeof state.favs !== "object" || !state.favs) state.favs = {};
+  }
+  function saveFavs() {
+    try { localStorage.setItem(FAV_KEY, JSON.stringify(state.favs)); } catch (e) {}
+    updateFavBar();
+  }
+  function favId(it) { return it.seasonId ? "s" + it.seasonId : it.id; }
+  function toggleFav(it) {
+    var id = favId(it);
+    if (state.favs[id]) { delete state.favs[id]; }
+    else {
+      state.favs[id] = {
+        id: id,
+        title: it.title || "",
+        titleSub: it.titleSub || "",
+        kind: it.kind || "",
+        kindLabel: it.kindLabel || "",
+        cover: it.cover || "",
+        watchUrl: (it.seasonId ? "https://www.bilibili.com/bangumi/play/ss" + it.seasonId : (it.siteUrl || "https://anilist.co")),
+        seasonId: it.seasonId || null,
+        siteUrl: it.siteUrl || ""
+      };
+    }
+    saveFavs();
+    render();
+  }
+  function updateFavBar() {
+    var n = Object.keys(state.favs).length;
+    el.favToggle.innerHTML = (state.onlyFav ? "★ 我的收藏(" + n + ")" : "☆ 我的收藏(" + n + ")");
+    el.favToggle.className = "btn" + (state.onlyFav ? " on" : "");
+  }
+  function exportFavs() {
+    var data = { app: "anime-schedule", version: 1, exportedAt: new Date().toISOString(), favs: state.favs };
+    var blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "anime-schedule-favorites.json";
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+  }
+  function importFavs(file) {
+    var reader = new FileReader();
+    reader.onload = function () {
+      try {
+        var parsed = JSON.parse(String(reader.result || ""));
+        var incoming = parsed && parsed.favs ? parsed.favs : parsed;
+        if (!incoming || typeof incoming !== "object") throw new Error("bad");
+        var before = Object.keys(state.favs).length;
+        Object.keys(incoming).forEach(function (k) {
+          var v = incoming[k];
+          if (v && typeof v === "object") state.favs[k] = v;
+        });
+        saveFavs();
+        render();
+        alert("导入完成:新增收藏 " + (Object.keys(state.favs).length - before) + " 条,当前共 " + Object.keys(state.favs).length + " 条。");
+      } catch (e) {
+        alert("导入失败:文件格式不正确(应为本工具导出的 JSON 文件)。");
+      }
+    };
+    reader.readAsText(file);
+  }
+
+  // 简介中文化:调用 MyMemory 免费翻译接口(浏览器跨域可用、免密钥),按需逐条翻译并缓存
+  var translateCache = state.translated;
+  function translateDesc(id, text) {
+    if (!text) return null;
+    if (translateCache[id]) return translateCache[id]; // 已缓存
+    // 限制单次翻译长度,避免接口拒绝超长文本
+    var q = text.length > 900 ? text.slice(0, 900) : text;
+    var url = "https://api.mymemory.translated.net/get?q=" + enc(q) + "&langpair=en|zh-CN";
+    fetch(url).then(function (r) {
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      return r.json();
+    }).then(function (json) {
+      var t = json && json.responseData && json.responseData.translatedText;
+      if (t && String(t).trim() && String(t).toLowerCase() !== String(q).toLowerCase()) {
+        translateCache[id] = String(t).trim();
+        render(); // 翻译完成,刷新显示中文
+      }
+    }).catch(function () { /* 失败则保留原文 */ });
+    return null;
+  }
+
+  function fetchTimeout(url, opts, ms) {
+    var ctrl = new AbortController();
+    var timer = setTimeout(function () { ctrl.abort(); }, ms || 8000);
+    opts = opts || {};
+    opts.signal = ctrl.signal;
+    return fetch(url, opts).then(function (r) {
+      clearTimeout(timer);
+      return r;
+    }, function (e) { clearTimeout(timer); throw e; });
+  }
+
+  // ---------- source 1: bilibili ----------
+  function biliTimeline(types) {
+    return fetchTimeout("https://api.bilibili.com/pgc/web/timeline?types=" + types, null, 6000)
+      .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+      .then(function (json) {
+        if (!json || json.code !== 0 || !Array.isArray(json.result)) throw new Error("bili code " + (json && json.code));
+        return json.result;
+      });
+  }
+
+  function biliNormalize(daysArr, kind) {
+    var out = [];
+    daysArr.forEach(function (day) {
+      if (!day || !Array.isArray(day.episodes)) return;
+      day.episodes.forEach(function (e) {
+        if (!e || !e.season_id || !e.title) return;
+        var cover = (e.square_cover || e.cover || "").replace(/^http:\/\//i, "https://");
+        var pubTs = e.pub_ts || 0;
+        var dayIdx = null;
+        if (pubTs) {
+          var d = new Date((pubTs + 8 * 3600) * 1000); // bilibili pub_ts 为东八区
+          dayIdx = (d.getUTCDay() + 6) % 7;
+        }
+        out.push({
+          id: "b" + e.season_id + "-" + (e.episode_id || 0),
+          kind: kind,
+          kindLabel: kind === "ri" ? "日漫" : "国漫",
+          title: e.title,
+          titleSub: "",
+          cover: cover,
+          score: null,
+          studio: "",
+          desc: "",
+          hasIntro: false,
+          dayIdx: dayIdx,
+          clock: e.pub_time || "",
+          epText: e.pub_index || "",
+          seasonId: e.season_id,
+          isToday: day.is_today === 1,
+          dateLabel: day.date || ""
+        });
+      });
+    });
+    return out;
+  }
+
+  function loadBili() {
+    return Promise.all([
+      biliTimeline(1).then(function (r) { return biliNormalize(r, "ri"); }),
+      biliTimeline(4).then(function (r) { return biliNormalize(r, "guo"); })
+    ]).then(function (results) {
+      var all = results[0].concat(results[1]);
+      if (!all.length) throw new Error("empty");
+      return { items: all, source: "哔哩哔哩(实时)" };
+    });
+  }
+
+  // ---------- source 2: anilist ----------
+  var ENDPOINT = "https://graphql.anilist.co";
+  var QUERY = [
+    "query ($origin: CountryCode) {",
+    "  Page(page: 1, perPage: 50) {",
+    "    media(type: ANIME, status: RELEASING, countryOfOrigin: $origin, format_in: [TV, ONA], sort: POPULARITY_DESC) {",
+    "      id siteUrl countryOfOrigin episodes averageScore",
+    "      title { romaji native english }",
+    "      coverImage { extraLarge large color }",
+    "      description",
+    "      genres",
+    "      studios(isMain: true) { nodes { name } }",
+    "      nextAiringEpisode { airingAt timeUntilAiring episode }",
+    "    }",
+    "  }",
+    "}"
+  ].join("\n");
+
+  function gql(origin) {
+    return fetchTimeout(ENDPOINT, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Accept": "application/json" },
+      body: JSON.stringify({ query: QUERY, variables: { origin: origin } })
+    }, 8000).then(function (r) {
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      return r.json();
+    }).then(function (json) {
+      if (json.errors || !json.data || !json.data.Page) {
+        var m = (json.errors && json.errors[0] && json.errors[0].message) || "unknown";
+        throw new Error(m);
+      }
+      return json.data.Page.media || [];
+    });
+  }
+
+  function strip(s) {
+    if (!s) return "";
+    return String(s)
+      .replace(/!\[[^\]]*\]\([^)]*\)/g, "")
+      .replace(/\[([^\]]*)\]\([^)]*\)/g, "$1")
+      .replace(/<[^>]*>/g, "")
+      .replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&#39;/g, "'")
+      .replace(/\s+/g, " ").trim();
+  }
+
+  function pickTitle(t) {
+    return [t && t.native, t && t.romaji, t && t.english].filter(Boolean);
+  }
+
+  function aniNormalize(raw, origin) {
+    var out = [];
+    raw.forEach(function (m) {
+      var next = m.nextAiringEpisode;
+      var dayIdx = null, clock = "", nextEp = null, untilDays = null;
+      if (next && next.airingAt) {
+        var d = new Date(next.airingAt * 1000);
+        dayIdx = (d.getDay() + 6) % 7;
+        var hh = ("0" + d.getHours()).slice(-2);
+        var mm = ("0" + d.getMinutes()).slice(-2);
+        clock = hh + ":" + mm;
+        nextEp = next.episode || null;
+        untilDays = Math.round((next.timeUntilAiring || 0) / 86400);
+      }
+      var titles = pickTitle(m.title);
+      var studio = "";
+      if (m.studios && m.studios.nodes && m.studios.nodes.length) studio = m.studios.nodes[0].name;
+      out.push({
+        id: "a" + m.id,
+        kind: origin === "CN" ? "guo" : "ri",
+        kindLabel: origin === "CN" ? "国漫" : "日漫",
+        title: titles[0] || "未命名",
+        titleSub: (titles[1] && titles[1] !== titles[0] ? titles[1] : "") || "",
+        cover: (m.coverImage && (m.coverImage.extraLarge || m.coverImage.large)) || "",
+        score: m.averageScore || null,
+        studio: studio,
+        desc: strip(m.description),
+        hasIntro: !!strip(m.description),
+        genres: (m.genres || []).slice(0, 4),
+        siteUrl: m.siteUrl || "https://anilist.co",
+        dayIdx: dayIdx,
+        clock: clock,
+        nextEp: nextEp,
+        untilDays: untilDays,
+        isToday: false,
+        dateLabel: ""
+      });
+    });
+    return out;
+  }
+
+  function loadAni() {
+    return Promise.all([gql("JP"), gql("CN")]).then(function (results) {
+      var all = aniNormalize(results[0], "JP").concat(aniNormalize(results[1], "CN"));
+      if (!all.length) throw new Error("empty");
+      return { items: all, source: "AniList(国际)" };
+    });
+  }
+
+  // ---------- load with fallback ----------
+  function loadAll(forceManual) {
+    if (state.loading) return;
+    state.loading = true;
+    setStatus(true, "正在获取时间表(哔哩哔哩 → AniList)…");
+    el.refreshBtn.disabled = true;
+    setSrc("", "");
+    var chain = loadBili().catch(function () { return loadAni(); });
+    chain.then(function (res) {
+      state.items = res.items;
+      state.expanded = {};
+      state.source = res.source;
+      setStatus(false, "");
+      if (!state.items.length) setStatus(false, "", "数据源返回空,请稍后重试。");
+      render();
+    }).catch(function (err) {
+      state.items = [];
+      state.source = "";
+      setStatus(false, "",
+        "两个数据源都加载失败。可能原因:当前网络限制跨域请求,或无法访问 哔哩哔哩/AniList 接口。<br>" +
+        "可点击上方站点直达(班固米/哔哩哔哩/MAL 等)直接浏览,或稍后点「刷新数据」重试。详情:" + esc(err && err.message));
+      render();
+    }).then(function () {
+      state.loading = false;
+      el.refreshBtn.disabled = false;
+    });
+  }
+
+  // ---------- 类型(genre)中文化 ----------
+  var GENRE_ZH = {
+    "Action": "战斗", "Adventure": "冒险", "Comedy": "搞笑", "Drama": "剧情",
+    "Fantasy": "奇幻", "Horror": "恐怖", "Mystery": "悬疑", "Romance": "恋爱",
+    "Sci-Fi": "科幻", "Slice of Life": "日常", "Sports": "运动", "Supernatural": "超自然",
+    "Thriller": "惊悚", "Psychological": "心理", "Mecha": "机战", "Music": "音乐",
+    "School": "校园", "Historical": "历史", "Super Power": "超能力", "Military": "军事",
+    "Space": "太空", "Detective": "推理", "Game": "游戏", "Magic": "魔法",
+    "Mahou Shoujo": "魔法少女", "Harem": "后宫", "Ecchi": "福利", "Martial Arts": "武侠",
+    "Kids": "儿童", "Parody": "恶搞", "Police": "警匪", "Samurai": "武士",
+    "Seinen": "青年", "Shounen": "少年", "Shoujo": "少女", "Josei": "女性向",
+    "Vampire": "吸血鬼", "Demons": "魔幻", "Tragedy": "悲剧", "War": "战争",
+    "Workplace": "职场", "Cars": "赛车", "Slice-of-Life": "日常", "Sci Fi": "科幻"
+  };
+  function zhGenre(g) {
+    if (!g) return "其他";
+    return GENRE_ZH[g] || GENRE_ZH[String(g).trim()] || g;
+  }
+  function mainGenre(it) {
+    if (it.genres && it.genres.length) return zhGenre(it.genres[0]);
+    return "其他";
+  }
+
+  // ---------- render ----------
+  function esc(s) {
+    return String(s == null ? "" : s)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+  function enc(s) { return encodeURIComponent(String(s)); }
+
+  function extSearch(title) {
+    var q = enc(title);
+    return {
+      bgm: "https://bgm.tv/subject_search/" + q + "?cat=2",
+      bili: "https://search.bilibili.com/all?keyword=" + q,
+      anilist: "https://anilist.co/search/anime?search=" + q,
+      mal: "https://myanimelist.net/anime.php?q=" + q + "&cat=anime"
+    };
+  }
+
+  function setStatus(loading, text, errText) {
+    el.status.className = "msg" + (errText ? " err" : "");
+    el.status.innerHTML = (loading ? '<span class="loading"></span>' : "") + (errText || text || "");
+  }
+
+  function setSrc(source, msg) {
+    el.srcRow.innerHTML = source
+      ? '<span class="dot"></span>当前数据源:' + esc(source) + (msg ? " · " + esc(msg) : "")
+      : "";
+  }
+
+  function render() {
+    el.siteChips.innerHTML = SITES.map(function (s) {
+      return '<a class="chip" href="' + esc(s.url) + '" target="_blank" rel="noreferrer">' + esc(s.name) + '<small>↗</small></a>';
+    }).join("");
+
+    // 视图切换:星期表 / 类型分类
+    var modeDef = [["week", "星期表"], ["type", "类型分类"]];
+    el.segMode.innerHTML = modeDef.map(function (d) {
+      return '<button data-m="' + d[0] + '" class="' + (state.mode === d[0] ? "on" : "") + '">' + d[1] + "</button>";
+    }).join("");
+    Array.prototype.forEach.call(el.segMode.querySelectorAll("button"), function (b) {
+      b.onclick = function () { state.mode = b.getAttribute("data-m"); render(); };
+    });
+
+    // 国漫/日漫 筛选
+    var segDef = [["all", "全部"], ["ri", "日漫"], ["guo", "国漫"]];
+    el.seg.innerHTML = segDef.map(function (d) {
+      return '<button data-f="' + d[0] + '" class="' + (state.filter === d[0] ? "on" : "") + '">' + d[1] + "</button>";
+    }).join("");
+    Array.prototype.forEach.call(el.seg.querySelectorAll("button"), function (b) {
+      b.onclick = function () { state.filter = b.getAttribute("data-f"); render(); };
+    });
+
+    setSrc(state.source, state.source ? "点击「刷新数据」可重新拉取" : "");
+
+    var q = state.query.toLowerCase();
+    var shown;
+    if (state.onlyFav) {
+      // 只看收藏:从本地收藏快照构建,不依赖当前在线列表
+      shown = Object.keys(state.favs).map(function (k) { return favToItem(state.favs[k]); }).filter(function (it) {
+        if (state.filter === "ri" && it.kind !== "ri") return false;
+        if (state.filter === "guo" && it.kind !== "guo") return false;
+        if (q && (it.title + " " + it.titleSub).toLowerCase().indexOf(q) < 0) return false;
+        return true;
+      });
+    } else {
+      shown = state.items.filter(function (it) {
+        if (state.filter === "ri" && it.kind !== "ri") return false;
+        if (state.filter === "guo" && it.kind !== "guo") return false;
+        if (q && (it.title + " " + it.titleSub).toLowerCase().indexOf(q) < 0) return false;
+        return true;
+      });
+    }
+
+    var container = el.list;
+    if (!shown.length) {
+      container.innerHTML = state.onlyFav
+        ? '<div class="msg">还没有收藏任何番剧 —— 点卡片右侧的 ☆ 即可收藏。</div>'
+        : (state.items.length
+          ? '<div class="msg">没有符合筛选条件的条目。</div>'
+          : '<div class="msg">暂无数据 —— 请点「刷新数据」。</div>');
+      return;
+    }
+
+    container.innerHTML = (state.mode === "type" && !state.onlyFav) ? renderByType(shown) : renderByWeek(shown);
+
+    Array.prototype.forEach.call(container.querySelectorAll("[data-expand]"), function (b) {
+      b.onclick = function () {
+        var id = b.getAttribute("data-expand");
+        state.expanded[id] = !state.expanded[id];
+        render();
+      };
+    });
+    Array.prototype.forEach.call(container.querySelectorAll("[data-fav]"), function (b) {
+      b.onclick = function () {
+        var id = b.getAttribute("data-fav");
+        var live = findItemById(id);
+        if (state.onlyFav) {
+          // 收藏视图点★ = 取消收藏
+          if (state.favs[id]) { delete state.favs[id]; saveFavs(); render(); }
+          return;
+        }
+        if (live) toggleFav(live);
+      };
+    });
+  }
+
+  function favToItem(f) {
+    return {
+      id: f.id,
+      _snapshot: true,
+      kind: f.kind || "",
+      kindLabel: f.kindLabel || "收藏",
+      title: f.title || "未知番剧",
+      titleSub: f.titleSub || "",
+      cover: f.cover || "",
+      score: null,
+      studio: "",
+      genres: [],
+      desc: "",
+      siteUrl: f.siteUrl || f.watchUrl || "",
+      seasonId: f.seasonId || null,
+      dayIdx: null,
+      clock: "",
+      nextEp: null,
+      untilDays: null,
+      epText: ""
+    };
+  }
+  function findItemById(id) {
+    for (var i = 0; i < state.items.length; i++) {
+      if (state.items[i].seasonId && ("s" + state.items[i].seasonId) === id) return state.items[i];
+      if (state.items[i].id === id) return state.items[i];
+    }
+    return null;
+  }
+
+  // 按星期视图
+  function renderByWeek(shown) {
+    var byDay = {};
+    shown.forEach(function (it) {
+      var k = it.dayIdx == null ? 7 : it.dayIdx;
+      (byDay[k] = byDay[k] || []).push(it);
+    });
+    var now = new Date();
+    var todayIdx = (now.getDay() + 6) % 7;
+
+    var html = "";
+    var count = 0;
+    [0, 1, 2, 3, 4, 5, 6, 7].forEach(function (k) {
+      var items = byDay[k];
+      if (!items) return;
+      items.sort(function (a, b) {
+        if (a.clock === b.clock) return a.title.localeCompare(b.title, "zh");
+        return a.clock < b.clock ? -1 : 1;
+      });
+      var isToday = k === todayIdx;
+      count += items.length;
+      html += '<div class="day"><span class="dn' + (isToday ? " today" : "") + '">' + (isToday ? "今天 · " : "") + WEEK_NAMES[k] + "</span>" +
+        '<span class="dm">' + items.length + " 部</span></div>";
+      items.forEach(function (it) { html += cardHtml(it); });
+    });
+    return '<div style="color:var(--sub);font-size:12.5px;margin-top:4px">共 ' + count + " 部 · " +
+      (state.filter === "all" ? "日漫/国漫混合展示" : (state.filter === "ri" ? "仅日漫" : "仅国漫")) + "</div>" + html;
+  }
+
+  // 分类视图:先分 国漫/日漫,再按类型分组
+  function renderByType(shown) {
+    var kinds = [];
+    if (state.filter === "ri") kinds = [["ri", "日漫"]];
+    else if (state.filter === "guo") kinds = [["guo", "国漫"]];
+    else kinds = [["ri", "日漫"], ["guo", "国漫"]];
+
+    var html = "";
+    var total = 0;
+    kinds.forEach(function (pair) {
+      var kind = pair[0], kindLabel = pair[1];
+      var list = shown.filter(function (it) { return it.kind === kind; });
+      if (!list.length) return;
+      // 按类型分组
+      var groups = {};
+      list.forEach(function (it) {
+        var g = mainGenre(it);
+        (groups[g] = groups[g] || []).push(it);
+      });
+      var order = ["战斗", "冒险", "奇幻", "科幻", "剧情", "搞笑", "日常", "恋爱", "悬疑", "恐怖", "运动", "音乐", "机战", "魔法", "超自然", "超能力", "校园", "历史", "其他"];
+      var keys = Object.keys(groups).sort(function (a, b) {
+        var ia = order.indexOf(a), ib = order.indexOf(b);
+        if (ia === -1) ia = 999; if (ib === -1) ib = 999;
+        return ia - ib;
+      });
+      html += '<div class="sect"><span>' + esc(kindLabel) + "</span><span class=\"scount\">" + list.length + " 部</span></div>";
+      keys.forEach(function (g) {
+        var items = groups[g].sort(function (a, b) {
+          var ka = a.dayIdx == null ? 7 : a.dayIdx, kb = b.dayIdx == null ? 7 : b.dayIdx;
+          if (ka !== kb) return ka - kb;
+          if (a.clock === b.clock) return a.title.localeCompare(b.title, "zh");
+          return a.clock < b.clock ? -1 : 1;
+        });
+        total += items.length;
+        html += '<div class="grp"><span>' + esc(g) + "</span><span class=\"gcount\">" + items.length + " 部</span></div>";
+        items.forEach(function (it) { html += cardHtml(it); });
+      });
+    });
+    return '<div style="color:var(--sub);font-size:12.5px;margin-top:4px">共 ' + total + " 部 · 先按 日漫/国漫 分开,再按类型分类</div>" + html;
+  }
+
+  function metaHtml(it) {
+    if (it._snapshot) return "已收藏 · 点击「观看」直达";
+    if (it.dayIdx != null && (it.clock || it.nextEp)) {
+      var parts = [];
+      if (it.kind === "ri" || it.kind === "guo") {
+        parts.push("预计/最近 <b>" + WEEK_NAMES[it.dayIdx] + (it.clock ? " " + esc(it.clock) : ""));
+        if (it.nextEp) parts.push("更新第 <b>" + it.nextEp + "</b> 话");
+      } else {
+        parts.push("<b>" + WEEK_NAMES[it.dayIdx] + (it.clock ? " " + esc(it.clock) : "") + "</b>");
+      }
+      if (it.untilDays != null && it.untilDays >= 0) {
+        parts.push(it.untilDays === 0 ? " · 就在今天!" : " · 约 " + (it.untilDays + 1) + " 天后");
+      }
+      return parts.join("");
+    }
+    if (it.epText) return "更新 " + esc(it.epText);
+    return "连载中,排期未定";
+  }
+
+  function cardHtml(it) {
+    var id = it.id;
+    var favKey = favId(it);
+    var isFav = !!state.favs[favKey];
+    var expanded = !!state.expanded[id];
+    var tags = ['<span class="tag ' + it.kind + '">' + esc(it.kindLabel) + "</span>"];
+    if (isFav) tags.push('<span class="tag now">★已收藏</span>');
+    if (it.score) tags.push('<span class="tag">评分 ' + it.score + "</span>");
+    if (it.studio) tags.push('<span class="tag">' + esc(it.studio) + "</span>");
+    (it.genres || []).slice(0, 3).forEach(function (g) { tags.push('<span class="tag">' + esc(zhGenre(g)) + "</span>"); });
+    if (it.epText) tags.push('<span class="tag">' + esc(it.epText) + "</span>");
+
+    var links = extSearch(it.title);
+    var watchLink = it.seasonId
+      ? 'https://www.bilibili.com/bangumi/play/ss' + it.seasonId
+      : (it.siteUrl || "https://anilist.co");
+    var detail = "";
+    if (it.desc) {
+      // 仅在展开时请求翻译,避免对全部条目发起翻译请求导致限流
+      var zh = expanded ? translateDesc(id, it.desc) : translateCache[id];
+      var shownDesc = zh || it.desc;
+      var zhTag = zh ? '<span class="tag now">中文(机翻)</span>' : '';
+      var translatingTag = (expanded && !zh) ? '<span class="tag">中文(翻译中…)</span>' : '';
+      detail = '<div class="desc' + (expanded ? "" : " clamp") + '">' + esc(shownDesc) + "</div>" +
+        '<div class="ext"><button data-expand="' + id + '">' + (expanded ? "收起 ▲" : "展开简介 ▼") + "</button>" +
+        zhTag + translatingTag +
+        (it.siteUrl ? '<a href="' + esc(it.siteUrl) + '" target="_blank" rel="noreferrer">原站 ↗</a>' : "") +
+        '<a href="' + esc(links.bgm) + '" target="_blank" rel="noreferrer">班固米 ↗</a>' +
+        '<a href="' + esc(links.bili) + '" target="_blank" rel="noreferrer">B站搜索 ↗</a></div>';
+    } else {
+      detail = '<div class="ext"><button data-expand="' + id + '">' + (expanded ? "收起 ▲" : "简介") + "</button>" +
+        '<a href="' + esc(links.bgm) + '" target="_blank" rel="noreferrer">班固米 ↗</a>' +
+        '<a href="' + esc(links.bili) + '" target="_blank" rel="noreferrer">B站搜索 ↗</a>' +
+        '<a href="' + esc(links.anilist) + '" target="_blank" rel="noreferrer">AniList 搜索 ↗</a>' +
+        '<a href="' + esc(links.mal) + '" target="_blank" rel="noreferrer">MAL 搜索 ↗</a></div>';
+    }
+
+    return '<div class="card"><div class="row">' +
+      (it.cover ? '<img class="cover" src="' + esc(it.cover) + '" alt="" loading="lazy">' : "") +
+      '<div class="main">' +
+      '<p class="tt">' + esc(it.title) +
+      (it.titleSub ? ' <span style="font-size:12px;color:var(--sub);font-weight:400">' + esc(it.titleSub) + "</span>" : "") +
+      "</p>" +
+      '<div class="tags">' + tags.join("") + "</div>" +
+      '<p class="meta">' + metaHtml(it) + "</p>" +
+      "</div>" +
+      '<div class="acts">' +
+      '<button class="fav' + (isFav ? " on" : "") + '" data-fav="' + esc(favKey) + '" title="' + (isFav ? "取消收藏" : "收藏") + '" type="button">' + (isFav ? "★" : "☆") + "</button>" +
+      '<a href="' + esc(watchLink) + '" target="_blank" rel="noreferrer">观看 ↗</a></div>' +
+      "</div>" + detail + "</div>";
+  }
+
+  var debounce = null;
+  el.search.addEventListener("input", function () {
+    clearTimeout(debounce);
+    debounce = setTimeout(function () {
+      state.query = el.search.value.trim();
+      render();
+    }, 200);
+  });
+  el.refreshBtn.onclick = function () { loadAll(); };
+
+  // 收藏栏
+  el.favToggle.onclick = function () {
+    state.onlyFav = !state.onlyFav;
+    updateFavBar();
+    render();
+  };
+  el.favExport.onclick = function () { exportFavs(); };
+  el.favImport.onclick = function () { el.favFile.click(); };
+  el.favFile.onchange = function () {
+    if (el.favFile.files && el.favFile.files.length) importFavs(el.favFile.files[0]);
+    el.favFile.value = "";
+  };
+
+  // PWA:注册 Service Worker(仅 https/localhost 下可用,file:// 会静默跳过)
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", function () {
+      navigator.serviceWorker.register("./sw.js").catch(function () { /* 忽略:file:// 或受限环境 */ });
+    });
+  }
+
+  loadFavs();
+  updateFavBar();
+  loadAll();
+})();
+</script>
+</body>
+</html>

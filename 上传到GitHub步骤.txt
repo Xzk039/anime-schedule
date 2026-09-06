@@ -1,0 +1,36 @@
+# 上传到 GitHub 的傻瓜步骤(不需要安装任何工具)
+
+本文件夹就是你的**开源仓库内容**,共 3 个文件:
+- `index.html` —— 网站本体
+- `README.md` —— 项目介绍(会显示在仓库首页)
+- `LICENSE` —— MIT 开源协议
+
+## 第 1 步:注册 GitHub(若没有)
+1. 打开 https://github.com → Sign up,用邮箱注册(**免费**)。
+2. 去邮箱点验证链接。
+
+## 第 2 步:新建仓库
+1. 登录后点右上角 **+** → **New repository**。
+2. Repository name 填:**`anime-schedule`**
+3. Description 可填:`国漫日漫时间表 - 单文件追番小工具(AniList/哔哩哔哩数据)`
+4. 可见性选 **Public**(开源、公开)。
+5. **先不要**勾选 "Add a README"(我们要用自己的),直接 **Create repository**。
+
+## 第 3 步:网页上传 3 个文件
+1. 在新仓库页面点 **uploading an existing file**。
+2. 把桌面 `anime-schedule` 文件夹里的 **index.html、README.md、LICENSE** 三个文件一起拖进页面。
+3. 点 **Commit changes**。
+
+## 第 4 步:开启 GitHub Pages(让别人能打开网页)
+1. 仓库页顶部 **Settings** → 左侧 **Pages**。
+2. Branch 选 **main**,文件夹选 **/ (root)**,点 **Save**。
+3. 等 1~2 分钟,出现网址:
+   `https://你的用户名.github.io/anime-schedule/`
+   这就是别人能访问、能被 Google 搜到的网页地址。
+
+## 第 5 步(可选)让人更容易搜到
+- 到 [Google Search Console](https://search.google.com/search-console) 提交上面的网址,加速收录。
+- 到 [Gitee 镜像](https://gitee.com) 再传一份同样的仓库(国内用户访问 Gitee 更快),README 已含国内部署说明。
+
+## 以后怎么更新
+改完 `index.html` 后:仓库页面 → 点 `index.html` → 铅笔图标(编辑)→ 粘贴新内容 → Commit。或再次用 uploading an existing file 覆盖。GitHub Pages 几分钟后自动生效(无需手动刷新)。
