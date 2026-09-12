@@ -1,0 +1,36 @@
+{
+  "name": "anime-schedule",
+  "version": "1.0.0",
+  "description": "国漫 · 日漫 时间表 - 桌面版(网页套壳)",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --win"
+  },
+  "author": "anime-schedule",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^31.0.0",
+    "electron-builder": "^24.13.3"
+  },
+  "build": {
+    "appId": "com.xzk.animeschedule",
+    "productName": "追番时间表",
+    "files": [
+      "main.js",
+      "index.html",
+      "icons/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "icons/icon-512.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    }
+  }
+}
