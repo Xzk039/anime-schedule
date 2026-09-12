@@ -210,6 +210,10 @@
       dOfficial: "官方中文", dMt: "中文机翻", dRaw: "原文", dJa: "日文机翻",
       setProxy: "代理地址", proxyPh: "可选:填入代理地址(如 https://xxx.workers.dev),用于获取 Bangumi/B站 官方中文简介",
       offTag: "官方中文", offLoading: "获取官方简介…",
+      bgmLoading: "官方简介:正在加载 Bangumi…",
+      bgmOk: "官方简介:已从 Bangumi 加载",
+      bgmUnit: "条",
+      bgmFail: "官方简介:跨域受限(Bangumi 不允许网页直连),将使用机翻",
       today: "今天", unit: "部",
       mixed: "日漫/国漫混合展示", onlyRi: "仅日漫", onlyGuo: "仅国漫", totalPre: "共",
       splitNote: "先按日漫/国漫分开,再按类型分类",
@@ -244,6 +248,10 @@
       dOfficial: "Official CN", dMt: "MT Chinese", dRaw: "Original", dJa: "MT Japanese",
       setProxy: "Proxy URL", proxyPh: "optional: proxy URL (e.g. https://xxx.workers.dev) for official Chinese synopsis",
       offTag: "Official CN", offLoading: "loading official…",
+      bgmLoading: "Official synopsis: loading Bangumi…",
+      bgmOk: "Official synopsis: loaded from Bangumi",
+      bgmUnit: "items",
+      bgmFail: "Official synopsis: blocked by CORS (Bangumi) — using machine translation",
       today: "Today", unit: "",
       mixed: "Japanese & Chinese mixed", onlyRi: "Japanese only", onlyGuo: "Chinese only", totalPre: "Total",
       splitNote: "grouped by Japanese/Chinese, then by genre",
@@ -278,6 +286,10 @@
       dOfficial: "公式中国語", dMt: "中国語(機械翻訳)", dRaw: "原語", dJa: "日本語(機械翻訳)",
       setProxy: "プロキシURL", proxyPh: "任意:公式あらすじ取得用のプロキシURL",
       offTag: "公式中国語", offLoading: "公式あらすじ取得中…",
+      bgmLoading: "公式あらすじ:Bangumi 読み込み中…",
+      bgmOk: "公式あらすじ:Bangumi から取得",
+      bgmUnit: "件",
+      bgmFail: "公式あらすじ:クロスオリジン制限のため機械翻訳を使用",
       today: "今日", unit: "作品",
       mixed: "日本・中国アニメ混合", onlyRi: "日本アニメのみ", onlyGuo: "中国アニメのみ", totalPre: "全",
       splitNote: "日本/中国で分けた後、ジャンル別に分類",
@@ -398,6 +410,7 @@
     favs: {},
     settings: { ui: "zh", title: "native", desc: "official", proxy: "" },
     descLoading: {},
+    bgmStatus: "",
     showSettings: false
   };
 
@@ -547,6 +560,8 @@
     if (bgmMap) return;
     var base = proxyBase();
     var url = base ? base + "/bgm/calendar" : "https://api.bgm.tv/calendar";
+    state.bgmStatus = "loading";
+    render();
     fetchTimeout(url, null, 9000).then(function (r) {
       if (!r.ok) throw new Error("HTTP " + r.status);
       return r.json();
@@ -563,8 +578,13 @@
         });
       });
       bgmMap = map;
+      state.bgmStatus = "ok:" + Object.keys(map).length;
       render();
-    }).catch(function () { bgmMap = {}; });
+    }).catch(function () {
+      bgmMap = {};
+      state.bgmStatus = "fail";
+      render();
+    });
   }
   function officialFromBgm(it) {
     if (!bgmMap) return null;
@@ -879,6 +899,15 @@
       ? '<span class="dot"></span>' + esc(t("src")) + esc(source) + (msg ? " · " + esc(msg) : "")
       : "";
   }
+  // 官方中文简介(Bangumi)加载状态提示
+  function bgmStatusHtml() {
+    if (state.settings.desc !== "official") return "";
+    var s = state.bgmStatus;
+    if (s === "loading") return esc(t("bgmLoading"));
+    if (s && s.indexOf("ok:") === 0) return "✅ " + esc(t("bgmOk")) + " " + s.slice(3) + " " + esc(t("bgmUnit"));
+    if (s === "fail") return "⚠️ " + esc(t("bgmFail"));
+    return "";
+  }
 
   // ==================== 设置面板 ====================
   function segHtml(defs, current) {
@@ -944,6 +973,8 @@
     });
 
     setSrc(state.source, state.source ? t("srcHint") : "");
+    var bsHtml = bgmStatusHtml();
+    if (bsHtml) el.srcRow.innerHTML += (el.srcRow.innerHTML ? " &nbsp;·&nbsp; " : "") + bsHtml;
 
     var q = state.query.toLowerCase();
     function keep(it) {
