@@ -1,0 +1,1229 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>国漫 · 日漫 时间表 | 新番放送时间查询</title>
+<meta name="description" content="免费在线查看国漫与日漫新番放送时间表:按星期或类型分类展示正在连载的日本动画与中国动画,含下一话更新时间、封面、评分与中文简介,支持追番收藏与正版平台跳转。">
+<meta name="keywords" content="动漫时间表,新番时间表,国漫时间表,日漫时间表,追番,放送时间,anime schedule">
+<meta name="robots" content="index,follow">
+<meta property="og:type" content="website">
+<meta property="og:title" content="国漫 · 日漫 时间表">
+<meta property="og:description" content="免费查看国漫与日漫新番放送时间、封面与简介,支持搜索、收藏与正版平台直达。">
+<meta property="og:locale" content="zh_CN">
+<meta name="theme-color" content="#d8433f">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png">
+<link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="追番时间表">
+<style>
+  :root {
+    --bg: #f5f6f8;
+    --card: #ffffff;
+    --line: #e3e5ea;
+    --text: #23272f;
+    --sub: #6b7280;
+    --accent: #d8433f;
+    --ri: #c2660a;
+    --guo: #1f8a4c;
+    --tag-bg: #f0f1f4;
+    --shadow: 0 1px 3px rgba(0,0,0,.08);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #131519;
+      --card: #1e2128;
+      --line: #33363f;
+      --text: #e7e9ee;
+      --sub: #9aa1ad;
+      --accent: #ff6b64;
+      --ri: #e8a04a;
+      --guo: #55c887;
+      --tag-bg: #2a2e37;
+      --shadow: 0 1px 3px rgba(0,0,0,.35);
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font: 14px/1.6 -apple-system, "Segoe UI", "Microsoft YaHei", "PingFang SC", sans-serif;
+  }
+  .wrap { max-width: 1000px; margin: 0 auto; padding: 22px 16px 60px; }
+  header.top { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; flex-wrap: wrap; }
+  h1 { font-size: 21px; margin: 0 0 4px; }
+  .sub { color: var(--sub); font-size: 12.5px; margin: 0; }
+  .hbtns { display: flex; gap: 8px; flex-wrap: wrap; }
+  .btn {
+    border: 1px solid var(--line); background: var(--card); color: var(--text);
+    border-radius: 9px; padding: 7px 16px; font-size: 13px; cursor: pointer; font-family: inherit;
+  }
+  .btn:disabled { opacity: .55; cursor: default; }
+  .btn.on { border-color: var(--accent); color: var(--accent); }
+  .setpanel {
+    border: 1px solid var(--line); background: var(--card); border-radius: 12px;
+    padding: 12px 14px; margin: 12px 0 2px; display: flex; flex-direction: column; gap: 10px;
+  }
+  .setrow { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .setlabel { font-size: 12.5px; color: var(--sub); min-width: 72px; }
+  .chips { display: flex; gap: 8px; flex-wrap: wrap; margin: 14px 0 4px; }
+  .chip {
+    font-size: 12.5px; color: var(--text); text-decoration: none;
+    border: 1px solid var(--line); background: var(--card); border-radius: 999px; padding: 4px 12px;
+  }
+  .chip small { color: var(--sub); margin-left: 4px; }
+  .chip:hover { border-color: var(--accent); }
+  .dlbar { display: flex; gap: 8px; flex-wrap: wrap; margin: 10px 0 2px; }
+  .dlbar a {
+    font-size: 12.5px; color: var(--text); text-decoration: none;
+    border: 1px solid var(--line); background: var(--card); border-radius: 999px; padding: 5px 14px;
+  }
+  .dlbar a:hover { border-color: var(--accent); color: var(--accent); }
+  .favbar { display: flex; gap: 8px; flex-wrap: wrap; margin: 10px 0 2px; }
+  .favbar .btn { font-size: 12px; padding: 5px 12px; }
+  .bar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 14px 0 6px; }
+  .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 9px; overflow: hidden; }
+  .seg button {
+    border: 0; background: transparent; color: var(--sub); padding: 6px 14px; font-size: 13px; cursor: pointer; font-family: inherit;
+  }
+  .seg button.on { background: var(--tag-bg); color: var(--text); font-weight: 600; }
+  .sect { display: flex; align-items: baseline; gap: 8px; margin: 20px 0 6px; font-size: 16px; font-weight: 700; border-bottom: 2px solid var(--line); padding-bottom: 4px; }
+  .sect .scount { font-size: 12px; color: var(--sub); font-weight: 400; margin-left: 2px; }
+  .grp { display: flex; align-items: baseline; gap: 8px; margin: 15px 0 4px; font-size: 13px; font-weight: 700; color: var(--text); border-left: 3px solid var(--accent); padding-left: 8px; }
+  .grp .gcount { font-size: 11px; color: var(--sub); font-weight: 400; }
+  input.search {
+    flex: 1; min-width: 180px; border: 1px solid var(--line); background: var(--card); color: var(--text);
+    border-radius: 9px; padding: 7px 12px; font-size: 13px; outline: none;
+  }
+  .srcrow { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 2px 0 4px; font-size: 12px; color: var(--sub); }
+  .srcrow .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+  .msg { padding: 26px 4px; color: var(--sub); font-size: 13.5px; line-height: 1.8; }
+  .msg.err { color: var(--accent); }
+  .day { margin: 18px 0 6px; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  .day .dn { font-size: 15px; font-weight: 700; }
+  .day .dn.today { color: var(--accent); }
+  .day .dm { font-size: 12px; color: var(--sub); }
+  .card {
+    border: 1px solid var(--line); background: var(--card); border-radius: 12px;
+    padding: 12px 14px; margin: 9px 0; box-shadow: var(--shadow);
+  }
+  .row { display: flex; gap: 13px; align-items: flex-start; }
+  .cover { width: 72px; height: 100px; object-fit: cover; border-radius: 7px; flex: none; background: var(--tag-bg); display: block; }
+  .main { flex: 1; min-width: 0; }
+  .tt { font-size: 15px; font-weight: 700; margin: 0; word-break: break-word; }
+  .tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+  .tag { font-size: 11px; padding: 1px 9px; border-radius: 999px; background: var(--tag-bg); color: var(--sub); border: 1px solid var(--line); }
+  .tag.ri { color: var(--ri); }
+  .tag.guo { color: var(--guo); }
+  .tag.now { color: var(--accent); border-color: transparent; font-weight: 600; }
+  .meta { font-size: 12.5px; color: var(--sub); margin: 7px 0 0; }
+  .meta b { color: var(--text); font-weight: 600; }
+  .acts { display: flex; align-items: center; gap: 12px; flex: none; padding-top: 2px; }
+  .acts a { color: var(--accent); font-size: 12.5px; text-decoration: none; }
+  .acts button {
+    border: 0; background: none; color: var(--accent); font-size: 12.5px; cursor: pointer; padding: 2px 0; font-family: inherit;
+  }
+  .acts .fav { font-size: 15px; line-height: 1; padding: 0 2px; }
+  .acts .fav.on { color: #f0b90b; }
+  .desc {
+    margin: 11px 0 0; border-top: 1px dashed var(--line); padding-top: 9px;
+    font-size: 13px; color: var(--sub); line-height: 1.75;
+  }
+  .desc.clamp { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .ext { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 9px; font-size: 12.5px; align-items: baseline; }
+  .ext a { color: var(--accent); text-decoration: none; }
+  .ext .lbl { color: var(--sub); }
+  .foot { margin-top: 26px; font-size: 11.5px; color: var(--sub); line-height: 1.8; }
+  .loading { display: inline-block; width: 14px; height: 14px; border: 2px solid var(--line); border-top-color: var(--accent); border-radius: 50%; animation: spin .8s linear infinite; vertical-align: -2px; margin-right: 8px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1 id="hTitle">国漫 · 日漫 时间表</h1>
+      <p class="sub" id="hSub"></p>
+    </div>
+    <div class="hbtns">
+      <button class="btn" id="setToggle" type="button">⚙️</button>
+      <button class="btn" id="refreshBtn" type="button">刷新数据</button>
+    </div>
+  </header>
+
+  <div class="setpanel" id="setPanel" style="display:none">
+    <div class="setrow"><span class="setlabel" id="lblUi"></span><div class="seg" id="setUi"></div></div>
+    <div class="setrow"><span class="setlabel" id="lblTitle"></span><div class="seg" id="setTitle"></div></div>
+    <div class="setrow"><span class="setlabel" id="lblDesc"></span><div class="seg" id="setDesc"></div></div>
+    <div class="setrow"><span class="setlabel" id="lblProxy"></span><input class="search" id="setProxy" type="text" style="flex:1;min-width:220px"></div>
+  </div>
+
+  <div class="srcrow" id="srcRow"></div>
+  <div class="chips" id="siteChips"></div>
+
+  <div class="dlbar" id="dlBar">
+    <a href="./download/追番时间表-Windows安装包.exe" download id="dlWin">⬇️ Windows 桌面版</a>
+    <a href="./download/追番时间表.apk" download id="dlApk">⬇️ 安卓 App (apk)</a>
+  </div>
+
+  <div class="favbar" id="favBar">
+    <button class="btn" id="favToggle" type="button">☆ 我的收藏(0)</button>
+    <button class="btn" id="favExport" type="button">导出收藏</button>
+    <button class="btn" id="favImport" type="button">导入收藏</button>
+    <input type="file" id="favFile" accept=".json,application/json" style="display:none">
+  </div>
+
+  <div class="bar">
+    <div class="seg" id="segMode"></div>
+    <div class="seg" id="seg"></div>
+    <input class="search" id="search" type="search">
+  </div>
+
+  <div id="status"></div>
+  <div id="list"></div>
+
+  <p class="foot" id="footNote"></p>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  // ==================== i18n ====================
+  var I18N = {
+    zh: {
+      title: "国漫 · 日漫 时间表",
+      sub: "免费追番工具 · 数据源自动切换(Bilibili / AniList) · 支持星期表 / 类型分类 · 简介默认中文",
+      refresh: "刷新数据", setTip: "设置",
+      src: "当前数据源:", srcHint: "点击「刷新数据」可重新拉取",
+      dlWin: "⬇️ Windows 桌面版(安装包)", dlApk: "⬇️ 安卓 App (apk)",
+      fav: "我的收藏", favExport: "导出收藏", favImport: "导入收藏",
+      modeWeek: "星期表", modeType: "类型分类",
+      all: "全部", ri: "日漫", guo: "国漫",
+      search: "搜索片名…",
+      setUi: "界面语言", setTitle: "标题显示", setDesc: "简介语言",
+      tNative: "原文", tRomaji: "罗马字", tEnglish: "英文",
+      dOfficial: "官方中文", dMt: "中文机翻", dRaw: "原文", dJa: "日文机翻",
+      setProxy: "代理地址", proxyPh: "可选:填入代理地址(如 https://xxx.workers.dev),用于获取 Bangumi/B站 官方中文简介",
+      offTag: "官方中文", offLoading: "获取官方简介…",
+      bgmLoading: "官方简介:正在加载 Bangumi…",
+      bgmOk: "官方简介:已从 Bangumi 加载",
+      bgmUnit: "条",
+      bgmFail: "官方简介:跨域受限(Bangumi 不允许网页直连),将使用机翻",
+      today: "今天", unit: "部",
+      mixed: "日漫/国漫混合展示", onlyRi: "仅日漫", onlyGuo: "仅国漫", totalPre: "共",
+      splitNote: "先按日漫/国漫分开,再按类型分类",
+      watch: "观看", intro: "简介", expand: "展开简介", collapse: "收起",
+      mt: "中文(机翻)", mtLoading: "中文(翻译中…)",
+      faved: "已收藏", score: "评分", legal: "正版看", cn: "国内", intl: "海外", origin: "原站",
+      noFav: "还没有收藏任何番剧 —— 点卡片右侧的 ☆ 即可收藏。",
+      noMatch: "没有符合筛选条件的条目。", noData: "暂无数据 —— 请点「刷新数据」。",
+      loading: "正在获取时间表…",
+      failTitle: "两个数据源都加载失败。",
+      failWhy: "可能原因:当前网络限制跨域请求,或无法访问 Bilibili / AniList 接口。",
+      failWhat: "可点击上方站点直达按钮直接浏览,或稍后重试。详情:",
+      snap: "已收藏 · 点击「观看」直达",
+      est: "预计/最近", epN: "更新第", epUnit: "话", inDays: "约", daysLater: "天后", justToday: "就在今天!",
+      upd: "更新", ongoing: "连载中,排期未定",
+      importOk: "导入完成:新增收藏 ", importOk2: " 条,当前共 ", importOk3: " 条。",
+      importBad: "导入失败:文件格式不正确(应为本工具导出的 JSON 文件)。",
+      foot: "个人学习项目 · 数据来自 AniList / Bilibili 公开接口 · 本站只做信息聚合与跳转,不存储、不提供任何盗版资源与下载 · 封面与简介版权归原作者及平台所有,如涉侵权请联系删除。"
+    },
+    en: {
+      title: "Anime Schedule",
+      sub: "Free anime timetable · auto source switching (Bilibili / AniList) · weekday & genre views · Chinese synopsis by default",
+      refresh: "Refresh", setTip: "Settings",
+      src: "Source:", srcHint: "click Refresh to reload",
+      dlWin: "⬇️ Windows desktop (installer)", dlApk: "⬇️ Android App (apk)",
+      fav: "Favorites", favExport: "Export", favImport: "Import",
+      modeWeek: "By weekday", modeType: "By genre",
+      all: "All", ri: "Japanese", guo: "Chinese",
+      search: "Search title…",
+      setUi: "UI language", setTitle: "Title", setDesc: "Synopsis",
+      tNative: "Original", tRomaji: "Romaji", tEnglish: "English",
+      dOfficial: "Official CN", dMt: "MT Chinese", dRaw: "Original", dJa: "MT Japanese",
+      setProxy: "Proxy URL", proxyPh: "optional: proxy URL (e.g. https://xxx.workers.dev) for official Chinese synopsis",
+      offTag: "Official CN", offLoading: "loading official…",
+      bgmLoading: "Official synopsis: loading Bangumi…",
+      bgmOk: "Official synopsis: loaded from Bangumi",
+      bgmUnit: "items",
+      bgmFail: "Official synopsis: blocked by CORS (Bangumi) — using machine translation",
+      today: "Today", unit: "",
+      mixed: "Japanese & Chinese mixed", onlyRi: "Japanese only", onlyGuo: "Chinese only", totalPre: "Total",
+      splitNote: "grouped by Japanese/Chinese, then by genre",
+      watch: "Watch", intro: "Summary", expand: "Show summary", collapse: "Hide",
+      mt: "MT Chinese", mtLoading: "translating…",
+      faved: "Faved", score: "Score", legal: "Official", cn: "CN", intl: "Global", origin: "Source",
+      noFav: "No favorites yet — tap ☆ on a card to add.",
+      noMatch: "No items match the filter.", noData: "No data — please refresh.",
+      loading: "Loading schedule…",
+      failTitle: "Both data sources failed.",
+      failWhy: "Your network may block cross-origin requests or cannot reach Bilibili / AniList.",
+      failWhat: "Use the site buttons above, or retry later. Detail: ",
+      snap: "Faved · tap Watch to open",
+      est: "Next/recent", epN: "episode", epUnit: "", inDays: "in ~", daysLater: " days", justToday: "today!",
+      upd: "Updated", ongoing: "Airing, schedule TBA",
+      importOk: "Imported: ", importOk2: " new, ", importOk3: " total.",
+      importBad: "Import failed: invalid file (expected JSON exported by this tool).",
+      foot: "Personal learning project · data from public AniList / Bilibili APIs · information and links only, no pirated content is stored or provided · covers and synopses belong to their original owners."
+    },
+    ja: {
+      title: "アニメ 時間表",
+      sub: "無料のアニメ番組表 · データ元自動切替(Bilibili / AniList) · 曜日別/ジャンル別 · あらすじは中国語が既定",
+      refresh: "更新", setTip: "設定",
+      src: "データ元:", srcHint: "「更新」で再取得",
+      dlWin: "⬇️ Windows デスクトップ版", dlApk: "⬇️ Android アプリ (apk)",
+      fav: "お気に入り", favExport: "書き出し", favImport: "読み込み",
+      modeWeek: "曜日別", modeType: "ジャンル別",
+      all: "すべて", ri: "日本アニメ", guo: "中国アニメ",
+      search: "タイトル検索…",
+      setUi: "表示言語", setTitle: "タイトル", setDesc: "あらすじ",
+      tNative: "原題", tRomaji: "ローマ字", tEnglish: "英語",
+      dOfficial: "公式中国語", dMt: "中国語(機械翻訳)", dRaw: "原語", dJa: "日本語(機械翻訳)",
+      setProxy: "プロキシURL", proxyPh: "任意:公式あらすじ取得用のプロキシURL",
+      offTag: "公式中国語", offLoading: "公式あらすじ取得中…",
+      bgmLoading: "公式あらすじ:Bangumi 読み込み中…",
+      bgmOk: "公式あらすじ:Bangumi から取得",
+      bgmUnit: "件",
+      bgmFail: "公式あらすじ:クロスオリジン制限のため機械翻訳を使用",
+      today: "今日", unit: "作品",
+      mixed: "日本・中国アニメ混合", onlyRi: "日本アニメのみ", onlyGuo: "中国アニメのみ", totalPre: "全",
+      splitNote: "日本/中国で分けた後、ジャンル別に分類",
+      watch: "視聴", intro: "あらすじ", expand: "あらすじを表示", collapse: "閉じる",
+      mt: "中国語(機械翻訳)", mtLoading: "翻訳中…",
+      faved: "お気に入り", score: "評価", legal: "正規配信", cn: "中国", intl: "海外", origin: "元サイト",
+      noFav: "お気に入りはまだありません —— カード右の ☆ で追加。",
+      noMatch: "条件に合う作品がありません。", noData: "データなし —— 更新してください。",
+      loading: "番組表を取得中…",
+      failTitle: "どちらのデータ元も取得に失敗しました。",
+      failWhy: "ネットワークがクロスオリジンを制限しているか、Bilibili / AniList に接続できません。",
+      failWhat: "上部のサイトボタンを使うか、後でもう一度お試しください。詳細: ",
+      snap: "お気に入り · 「視聴」で開く",
+      est: "次回/最近", epN: "第", epUnit: "話 更新", inDays: "約", daysLater: "日後", justToday: "今日!",
+      upd: "更新", ongoing: "放送中・日程未定",
+      importOk: "読み込み完了:追加 ", importOk2: " 件、合計 ", importOk3: " 件。",
+      importBad: "読み込み失敗:ファイル形式が正しくありません。",
+      foot: "個人の学習プロジェクト · データは AniList / Bilibili の公開APIより · 情報の集約とリンクのみで、海賊版の保存・提供は行いません · 画像とあらすじの権利は各権利者に帰属します。"
+    }
+  };
+
+  var WEEK_I18N = {
+    zh: ["周一", "周二", "周三", "周四", "周五", "周六", "周日"],
+    en: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+    ja: ["月", "火", "水", "木", "金", "土", "日"]
+  };
+
+  // 类型显示名(按界面语言);分组键始终用原始英文 genre
+  var GENRE_ZH = {
+    "Action": "战斗", "Adventure": "冒险", "Comedy": "搞笑", "Drama": "剧情",
+    "Fantasy": "奇幻", "Horror": "恐怖", "Mystery": "悬疑", "Romance": "恋爱",
+    "Sci-Fi": "科幻", "Slice of Life": "日常", "Sports": "运动", "Supernatural": "超自然",
+    "Thriller": "惊悚", "Psychological": "心理", "Mecha": "机战", "Music": "音乐",
+    "School": "校园", "Historical": "历史", "Super Power": "超能力", "Military": "军事",
+    "Space": "太空", "Detective": "推理", "Game": "游戏", "Magic": "魔法",
+    "Mahou Shoujo": "魔法少女", "Harem": "后宫", "Ecchi": "福利", "Martial Arts": "武侠",
+    "Kids": "儿童", "Parody": "恶搞", "Police": "警匪", "Samurai": "武士",
+    "Seinen": "青年", "Shounen": "少年", "Shoujo": "少女", "Josei": "女性向",
+    "Vampire": "吸血鬼", "Demons": "魔幻", "Tragedy": "悲剧", "War": "战争",
+    "Workplace": "职场", "Cars": "赛车", "Other": "其他"
+  };
+  var GENRE_JA = {
+    "Action": "アクション", "Adventure": "アドベンチャー", "Comedy": "コメディ", "Drama": "ドラマ",
+    "Fantasy": "ファンタジー", "Horror": "ホラー", "Mystery": "ミステリー", "Romance": "恋愛",
+    "Sci-Fi": "SF", "Slice of Life": "日常", "Sports": "スポーツ", "Supernatural": "超自然",
+    "Thriller": "スリラー", "Psychological": "心理", "Mecha": "メカ", "Music": "音楽",
+    "School": "学園", "Historical": "歴史", "Super Power": "超能力", "Military": "軍事",
+    "Space": "宇宙", "Detective": "推理", "Game": "ゲーム", "Magic": "魔法",
+    "Mahou Shoujo": "魔法少女", "Harem": "ハーレム", "Ecchi": "お色気", "Martial Arts": "武術",
+    "Kids": "キッズ", "Parody": "パロディ", "Police": "警察", "Samurai": "侍",
+    "Seinen": "青年", "Shounen": "少年", "Shoujo": "少女", "Josei": "女性向け",
+    "Vampire": "吸血鬼", "Demons": "悪魔", "Tragedy": "悲劇", "War": "戦争",
+    "Workplace": "お仕事", "Cars": "レース", "Other": "その他"
+  };
+  var GENRE_ORDER = ["Action", "Adventure", "Fantasy", "Sci-Fi", "Drama", "Comedy", "Slice of Life",
+    "Romance", "Mystery", "Horror", "Sports", "Music", "Mecha", "Magic", "Supernatural",
+    "Super Power", "School", "Historical", "Other"];
+
+  // 站点直达(原名,不做意译)
+  var SITES = [
+    { name: "Bilibili", url: "https://www.bilibili.com/anime/timeline" },
+    { name: "Bangumi", url: "https://bgm.tv/calendar" },
+    { name: "AniChart", url: "https://anichart.net" },
+    { name: "LiveChart", url: "https://www.livechart.me/schedule" },
+    { name: "MyAnimeList", url: "https://myanimelist.net/anime/season" },
+    { name: "AniList", url: "https://anilist.co/search/anime?format=TV&status=RELEASING" },
+    { name: "Crunchyroll", url: "https://www.crunchyroll.com/simulcasts" },
+    { name: "HIDIVE", url: "https://www.hidive.com" },
+    { name: "Netflix Anime", url: "https://www.netflix.com/browse/genre/7424" },
+    { name: "Kitsu", url: "https://kitsu.app" },
+    { name: "AniDB", url: "https://anidb.net" },
+    { name: "AcFun", url: "https://www.acfun.cn" },
+    { name: "Mango TV", url: "https://www.mgtv.com" },
+    { name: "Bahamut Anime", url: "https://ani.gamer.com.tw" }
+  ];
+
+  var el = {
+    hTitle: document.getElementById("hTitle"),
+    hSub: document.getElementById("hSub"),
+    footNote: document.getElementById("footNote"),
+    setToggle: document.getElementById("setToggle"),
+    setPanel: document.getElementById("setPanel"),
+    lblUi: document.getElementById("lblUi"),
+    lblTitle: document.getElementById("lblTitle"),
+    lblDesc: document.getElementById("lblDesc"),
+    lblProxy: document.getElementById("lblProxy"),
+    setUi: document.getElementById("setUi"),
+    setTitle: document.getElementById("setTitle"),
+    setDesc: document.getElementById("setDesc"),
+    setProxy: document.getElementById("setProxy"),
+    dlWin: document.getElementById("dlWin"),
+    dlApk: document.getElementById("dlApk"),
+    srcRow: document.getElementById("srcRow"),
+    siteChips: document.getElementById("siteChips"),
+    segMode: document.getElementById("segMode"),
+    seg: document.getElementById("seg"),
+    search: document.getElementById("search"),
+    status: document.getElementById("status"),
+    list: document.getElementById("list"),
+    refreshBtn: document.getElementById("refreshBtn"),
+    favToggle: document.getElementById("favToggle"),
+    favExport: document.getElementById("favExport"),
+    favImport: document.getElementById("favImport"),
+    favFile: document.getElementById("favFile")
+  };
+
+  var SET_KEY = "animeScheduleSettings.v1";
+  var state = {
+    items: [],
+    filter: "all",
+    mode: "week",
+    query: "",
+    expanded: {},
+    loading: false,
+    source: "",
+    translated: {},
+    onlyFav: false,
+    favs: {},
+    settings: { ui: "zh", title: "native", desc: "official", proxy: "" },
+    descLoading: {},
+    bgmStatus: "",
+    showSettings: false
+  };
+
+  function t(k) {
+    var d = I18N[state.settings.ui] || I18N.zh;
+    return d[k] != null ? d[k] : (I18N.zh[k] || k);
+  }
+  function weekNames() { return WEEK_I18N[state.settings.ui] || WEEK_I18N.zh; }
+  function genreLabel(raw) {
+    if (!raw) raw = "Other";
+    var ui = state.settings.ui;
+    if (ui === "zh") return GENRE_ZH[raw] || raw;
+    if (ui === "ja") return GENRE_JA[raw] || raw;
+    return raw;
+  }
+  function loadSettings() {
+    try {
+      var raw = localStorage.getItem(SET_KEY);
+      if (raw) {
+        var o = JSON.parse(raw);
+        if (o && typeof o === "object") {
+          if (o.ui) state.settings.ui = o.ui;
+          if (o.title) state.settings.title = o.title;
+          if (o.desc) state.settings.desc = o.desc;
+          if (typeof o.proxy === "string") state.settings.proxy = o.proxy;
+        }
+      }
+    } catch (e) {}
+  }
+  function saveSettings() {
+    try { localStorage.setItem(SET_KEY, JSON.stringify(state.settings)); } catch (e) {}
+  }
+
+  // ==================== 收藏 ====================
+  var FAV_KEY = "animeScheduleFavs.v1";
+  function loadFavs() {
+    try {
+      var raw = localStorage.getItem(FAV_KEY);
+      if (raw) state.favs = JSON.parse(raw) || {};
+    } catch (e) { state.favs = {}; }
+    if (typeof state.favs !== "object" || !state.favs) state.favs = {};
+  }
+  function saveFavs() {
+    try { localStorage.setItem(FAV_KEY, JSON.stringify(state.favs)); } catch (e) {}
+    updateFavBar();
+  }
+  function favId(it) { return it.seasonId ? "s" + it.seasonId : it.id; }
+  function toggleFav(it) {
+    var id = favId(it);
+    if (state.favs[id]) { delete state.favs[id]; }
+    else {
+      var dt = displayTitle(it);
+      state.favs[id] = {
+        id: id,
+        title: dt.main || "",
+        titleSub: dt.sub || "",
+        kind: it.kind || "",
+        kindLabel: it.kind === "guo" ? t("guo") : (it.kind === "ri" ? t("ri") : ""),
+        cover: it.cover || "",
+        watchUrl: (it.seasonId ? "https://www.bilibili.com/bangumi/play/ss" + it.seasonId : (it.siteUrl || "https://anilist.co")),
+        seasonId: it.seasonId || null,
+        siteUrl: it.siteUrl || ""
+      };
+    }
+    saveFavs();
+    render();
+  }
+  function updateFavBar() {
+    var n = Object.keys(state.favs).length;
+    el.favToggle.innerHTML = (state.onlyFav ? "★ " : "☆ ") + t("fav") + "(" + n + ")";
+    el.favToggle.className = "btn" + (state.onlyFav ? " on" : "");
+    el.favExport.textContent = t("favExport");
+    el.favImport.textContent = t("favImport");
+  }
+  function exportFavs() {
+    var data = { app: "anime-schedule", version: 2, exportedAt: new Date().toISOString(), favs: state.favs };
+    var blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "anime-schedule-favorites.json";
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+  }
+  function importFavs(file) {
+    var reader = new FileReader();
+    reader.onload = function () {
+      try {
+        var parsed = JSON.parse(String(reader.result || ""));
+        var incoming = parsed && parsed.favs ? parsed.favs : parsed;
+        if (!incoming || typeof incoming !== "object") throw new Error("bad");
+        var before = Object.keys(state.favs).length;
+        Object.keys(incoming).forEach(function (k) {
+          var v = incoming[k];
+          if (v && typeof v === "object") state.favs[k] = v;
+        });
+        saveFavs();
+        render();
+        alert(t("importOk") + (Object.keys(state.favs).length - before) + t("importOk2") + Object.keys(state.favs).length + t("importOk3"));
+      } catch (e) {
+        alert(t("importBad"));
+      }
+    };
+    reader.readAsText(file);
+  }
+
+  // ==================== 简介来源 ====================
+  // 简介语言:official=官方中文优先(失败回退机翻) / mt=中文机翻 / ja=日文机翻 / raw=原文
+  function targetLang() {
+    var d = state.settings.desc;
+    if (d === "raw") return null;
+    if (d === "ja") return "ja-JP";
+    return "zh-CN";
+  }
+  function proxyBase() {
+    var p = state.settings.proxy;
+    return p ? String(p).replace(/\/+$/, "") : "";
+  }
+  function translateDesc(id, text, tgt) {
+    tgt = tgt || targetLang();
+    if (!text || !tgt) return null;
+    var key = id + "|" + tgt;
+    if (state.translated[key]) return state.translated[key];
+    var q = text.length > 900 ? text.slice(0, 900) : text;
+    var url = "https://api.mymemory.translated.net/get?q=" + enc(q) + "&langpair=en|" + tgt;
+    fetch(url).then(function (r) {
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      return r.json();
+    }).then(function (json) {
+      var v = json && json.responseData && json.responseData.translatedText;
+      if (v && String(v).trim() && String(v).toLowerCase() !== String(q).toLowerCase()) {
+        state.translated[key] = String(v).trim();
+        render();
+      }
+    }).catch(function () {});
+    return null;
+  }
+
+  // ---- 官方中文简介:Bangumi 放送日历(一次请求,建立 标题→中文简介 映射) ----
+  var bgmMap = null; // normalized title -> { summary, name_cn }
+  function normKey(s) {
+    return String(s == null ? "" : s)
+      .toLowerCase()
+      .replace(/[\s\u3000【】\[\]()（）·・:：;；!！?？~～\-—_,.。、"'"'`《》<>]/g, "");
+  }
+  function loadBgmCalendar() {
+    if (bgmMap) return;
+    var base = proxyBase();
+    var url = base ? base + "/bgm/calendar" : "https://api.bgm.tv/calendar";
+    state.bgmStatus = "loading";
+    render();
+    fetchTimeout(url, null, 9000).then(function (r) {
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      return r.json();
+    }).then(function (list) {
+      var map = {};
+      (Array.isArray(list) ? list : []).forEach(function (day) {
+        var items = (day && day.items) || [];
+        items.forEach(function (it) {
+          var s = strip(it.summary);
+          if (!s) return;
+          [it.name, it.name_cn].forEach(function (n) {
+            if (n) map[normKey(n)] = { summary: s, name_cn: it.name_cn || "" };
+          });
+        });
+      });
+      bgmMap = map;
+      state.bgmStatus = "ok:" + Object.keys(map).length;
+      render();
+    }).catch(function () {
+      bgmMap = {};
+      state.bgmStatus = "fail";
+      render();
+    });
+  }
+  function officialFromBgm(it) {
+    if (!bgmMap) return null;
+    var keys = [it.tNative, it.title, it.tRomaji, it.tEnglish, it.titleSub];
+    for (var i = 0; i < keys.length; i++) {
+      if (!keys[i]) continue;
+      var hit = bgmMap[normKey(keys[i])];
+      if (hit && hit.summary) return { text: hit.summary, src: "Bangumi" };
+    }
+    return null;
+  }
+  // ---- 官方中文简介:Bilibili 番剧详情(需要代理;按 seasonId 精确获取) ----
+  function officialFromBili(it) {
+    if (!it.seasonId) return null;
+    var base = proxyBase();
+    if (!base) return null;
+    var key = "bili|" + it.seasonId;
+    if (state.translated[key] !== undefined) {
+      var v = state.translated[key];
+      return v ? { text: v, src: "Bilibili" } : null;
+    }
+    if (state.descLoading[key]) return null;
+    state.descLoading[key] = true;
+    fetchTimeout(base + "/bili/season?id=" + enc(it.seasonId), null, 9000)
+      .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+      .then(function (j) {
+        var s = j && (j.evaluate || j.summary);
+        state.translated[key] = s ? String(s).trim() : "";
+        delete state.descLoading[key];
+        render();
+      })
+      .catch(function () {
+        state.translated[key] = "";
+        delete state.descLoading[key];
+        render();
+      });
+    return null;
+  }
+  // 统一解析:返回 { text, tag, translating }
+  function resolveDesc(it, id, expanded) {
+    if (!it.desc) return { text: "", tag: "", translating: false };
+    var mode = state.settings.desc;
+    if (mode === "raw") return { text: it.desc, tag: "", translating: false };
+
+    if (mode === "official") {
+      var off = officialFromBili(it) || officialFromBgm(it);
+      if (off) return { text: off.text, tag: t("offTag") + " · " + off.src, translating: false };
+      // 没有官方中文 → 回退机翻(仍比英文原文友好)
+      var tgt0 = "zh-CN";
+      var mt0 = expanded ? translateDesc(id, it.desc, tgt0) : state.translated[id + "|" + tgt0];
+      return {
+        text: mt0 || it.desc,
+        tag: mt0 ? t("mt") : "",
+        translating: !!(expanded && !mt0)
+      };
+    }
+    var tgt = targetLang();
+    var mt = tgt ? (expanded ? translateDesc(id, it.desc, tgt) : state.translated[id + "|" + tgt]) : null;
+    return {
+      text: mt || it.desc,
+      tag: mt ? (mode === "ja" ? t("dJa") : t("mt")) : "",
+      translating: !!(expanded && tgt && !mt)
+    };
+  }
+
+  // ==================== 网络 ====================
+  function fetchTimeout(url, opts, ms) {
+    var ctrl = new AbortController();
+    var timer = setTimeout(function () { ctrl.abort(); }, ms || 8000);
+    opts = opts || {};
+    opts.signal = ctrl.signal;
+    return fetch(url, opts).then(function (r) { clearTimeout(timer); return r; },
+      function (e) { clearTimeout(timer); throw e; });
+  }
+
+  function biliTimeline(types) {
+    return fetchTimeout("https://api.bilibili.com/pgc/web/timeline?types=" + types, null, 6000)
+      .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+      .then(function (json) {
+        if (!json || json.code !== 0 || !Array.isArray(json.result)) throw new Error("bili code " + (json && json.code));
+        return json.result;
+      });
+  }
+
+  function biliNormalize(daysArr, kind) {
+    var out = [];
+    daysArr.forEach(function (day) {
+      if (!day || !Array.isArray(day.episodes)) return;
+      day.episodes.forEach(function (e) {
+        if (!e || !e.season_id || !e.title) return;
+        var cover = (e.square_cover || e.cover || "").replace(/^http:\/\//i, "https://");
+        var pubTs = e.pub_ts || 0;
+        var dayIdx = null, clock = "";
+        if (pubTs) {
+          var d = new Date((pubTs + 8 * 3600) * 1000);
+          dayIdx = (d.getUTCDay() + 6) % 7;
+          clock = ("0" + d.getUTCHours()).slice(-2) + ":" + ("0" + d.getUTCMinutes()).slice(-2);
+        }
+        if (e.pub_time) clock = e.pub_time;
+        out.push({
+          id: "b" + e.season_id + "-" + (e.episode_id || 0),
+          kind: kind,
+          tNative: e.title, tRomaji: "", tEnglish: "",
+          title: e.title, titleSub: "",
+          cover: cover, score: null, studio: "", desc: "",
+          genresRaw: [],
+          dayIdx: dayIdx, clock: clock, nextEp: null, untilDays: null,
+          epText: e.pub_index || "",
+          seasonId: e.season_id,
+          isToday: day.is_today === 1
+        });
+      });
+    });
+    return out;
+  }
+
+  function loadBili() {
+    return Promise.all([
+      biliTimeline(1).then(function (r) { return biliNormalize(r, "ri"); }),
+      biliTimeline(4).then(function (r) { return biliNormalize(r, "guo"); })
+    ]).then(function (res) {
+      var all = res[0].concat(res[1]);
+      if (!all.length) throw new Error("empty");
+      return { items: all, source: "Bilibili" };
+    });
+  }
+
+  var ENDPOINT = "https://graphql.anilist.co";
+  var QUERY = [
+    "query ($origin: CountryCode) {",
+    "  Page(page: 1, perPage: 50) {",
+    "    media(type: ANIME, status: RELEASING, countryOfOrigin: $origin, format_in: [TV, ONA], sort: POPULARITY_DESC) {",
+    "      id siteUrl countryOfOrigin episodes averageScore",
+    "      title { romaji native english }",
+    "      coverImage { extraLarge large color }",
+    "      description",
+    "      genres",
+    "      studios(isMain: true) { nodes { name } }",
+    "      nextAiringEpisode { airingAt timeUntilAiring episode }",
+    "    }",
+    "  }",
+    "}"
+  ].join("\n");
+
+  function gql(origin) {
+    var endpoint = proxyBase() ? (proxyBase() + "/anilist") : ENDPOINT;
+    return fetchTimeout(endpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Accept": "application/json" },
+      body: JSON.stringify({ query: QUERY, variables: { origin: origin } })
+    }, 8000).then(function (r) {
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      return r.json();
+    }).then(function (json) {
+      if (json.errors || !json.data || !json.data.Page) {
+        var m = (json.errors && json.errors[0] && json.errors[0].message) || "unknown";
+        throw new Error(m);
+      }
+      return json.data.Page.media || [];
+    });
+  }
+
+  function strip(s) {
+    if (!s) return "";
+    return String(s)
+      .replace(/!\[[^\]]*\]\([^)]*\)/g, "")
+      .replace(/\[([^\]]*)\]\([^)]*\)/g, "$1")
+      .replace(/<[^>]*>/g, "")
+      .replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&#39;/g, "'")
+      .replace(/\s+/g, " ").trim();
+  }
+
+  function aniNormalize(raw, origin) {
+    var out = [];
+    raw.forEach(function (m) {
+      var next = m.nextAiringEpisode;
+      var dayIdx = null, clock = "", nextEp = null, untilDays = null;
+      if (next && next.airingAt) {
+        var d = new Date(next.airingAt * 1000);
+        dayIdx = (d.getDay() + 6) % 7;
+        clock = ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2);
+        nextEp = next.episode || null;
+        untilDays = Math.round((next.timeUntilAiring || 0) / 86400);
+      }
+      var studio = "";
+      if (m.studios && m.studios.nodes && m.studios.nodes.length) studio = m.studios.nodes[0].name;
+      var tn = (m.title && m.title.native) || "", tr = (m.title && m.title.romaji) || "", te = (m.title && m.title.english) || "";
+      out.push({
+        id: "a" + m.id,
+        kind: origin === "CN" ? "guo" : "ri",
+        tNative: tn, tRomaji: tr, tEnglish: te,
+        title: tn || tr || te || "?",
+        titleSub: "",
+        cover: (m.coverImage && (m.coverImage.extraLarge || m.coverImage.large)) || "",
+        score: m.averageScore || null,
+        studio: studio,
+        desc: strip(m.description),
+        genresRaw: (m.genres || []).slice(0, 4),
+        siteUrl: m.siteUrl || "https://anilist.co",
+        dayIdx: dayIdx, clock: clock, nextEp: nextEp, untilDays: untilDays,
+        epText: "", seasonId: null, isToday: false
+      });
+    });
+    return out;
+  }
+
+  function loadAni() {
+    return Promise.all([gql("JP"), gql("CN")]).then(function (res) {
+      var all = aniNormalize(res[0], "JP").concat(aniNormalize(res[1], "CN"));
+      if (!all.length) throw new Error("empty");
+      return { items: all, source: "AniList" };
+    });
+  }
+
+  function loadAll() {
+    if (state.loading) return;
+    state.loading = true;
+    setStatus(true, t("loading"), "");
+    el.refreshBtn.disabled = true;
+    setSrc("", "");
+    loadBili().catch(function () { return loadAni(); }).then(function (res) {
+      state.items = res.items;
+      state.expanded = {};
+      state.source = res.source;
+      setStatus(false, "", "");
+      if (!state.items.length) setStatus(false, t("noData"), "");
+      render();
+    }).catch(function (err) {
+      state.items = [];
+      state.source = "";
+      setStatus(false, "", t("failTitle") + "<br>" + t("failWhy") + "<br>" + t("failWhat") + esc(err && err.message));
+      render();
+    }).then(function () {
+      state.loading = false;
+      el.refreshBtn.disabled = false;
+    });
+  }
+
+  // ==================== 工具 ====================
+  function esc(s) {
+    return String(s == null ? "" : s)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+  function enc(s) { return encodeURIComponent(String(s)); }
+
+  function displayTitle(it) {
+    if (it._snapshot) return { main: it.title, sub: it.titleSub };
+    var pref = state.settings.title;
+    var n = it.tNative, r = it.tRomaji, e = it.tEnglish;
+    var main;
+    if (pref === "romaji") main = r || n || e;
+    else if (pref === "english") main = e || r || n;
+    else main = n || r || e;
+    main = main || it.title || "?";
+    var pool = [n, r, e].filter(function (x) { return x && x !== main; });
+    return { main: main, sub: pool[0] || "" };
+  }
+  function searchText(it) {
+    return [it.tNative, it.tRomaji, it.tEnglish, it.title, it.titleSub].filter(Boolean).join(" ").toLowerCase();
+  }
+  function mainGenreRaw(it) {
+    if (it.genresRaw && it.genresRaw.length) return it.genresRaw[0];
+    return "Other";
+  }
+
+  // 搜索与正版平台链接(全部为跳转链接)
+  function extSearch(title) {
+    var q = enc(title);
+    return {
+      bangumi: "https://bgm.tv/subject_search/" + q + "?cat=2",
+      bilibili: "https://search.bilibili.com/all?keyword=" + q,
+      anilist: "https://anilist.co/search/anime?search=" + q,
+      mal: "https://myanimelist.net/anime.php?q=" + q + "&cat=anime",
+      tencent: "https://v.qq.com/x/search/?q=" + q,
+      iqiyi: "https://so.iqiyi.com/so/q_" + q,
+      youku: "https://so.youku.com/search_video/q_" + q,
+      mgtv: "https://so.mgtv.com/so?k=" + q,
+      acfun: "https://www.acfun.cn/search?keyword=" + q,
+      bahamut: "https://ani.gamer.com.tw/search.php?kw=" + q,
+      crunchyroll: "https://www.crunchyroll.com/search?q=" + q,
+      netflix: "https://www.netflix.com/search?q=" + q,
+      hidive: "https://www.hidive.com/search?q=" + q,
+      primevideo: "https://www.primevideo.com/search?phrase=" + q,
+      disney: "https://www.disneyplus.com/search?q=" + q
+    };
+  }
+  function platformRow(it) {
+    var links = extSearch(it.title);
+    var cn = [
+      ["Bilibili", links.bilibili], ["Tencent", links.tencent], ["iQIYI", links.iqiyi],
+      ["Youku", links.youku], ["Mango TV", links.mgtv], ["AcFun", links.acfun], ["Bahamut", links.bahamut]
+    ];
+    var intl = [
+      ["Crunchyroll", links.crunchyroll], ["Netflix", links.netflix], ["HIDIVE", links.hidive],
+      ["Prime Video", links.primevideo], ["Disney+", links.disney]
+    ];
+    function row(label, arr) {
+      return '<div class="ext"><span class="lbl">' + esc(label) + ":</span>" +
+        arr.map(function (p) {
+          return '<a href="' + esc(p[1]) + '" target="_blank" rel="noreferrer">' + esc(p[0]) + "</a>";
+        }).join("") + "</div>";
+    }
+    return row(t("cn"), cn) + row(t("intl"), intl);
+  }
+
+  function setStatus(loading, text, errText) {
+    el.status.className = "msg" + (errText ? " err" : "");
+    el.status.innerHTML = (loading ? '<span class="loading"></span>' : "") + (errText || text || "");
+  }
+  function setSrc(source, msg) {
+    el.srcRow.innerHTML = source
+      ? '<span class="dot"></span>' + esc(t("src")) + esc(source) + (msg ? " · " + esc(msg) : "")
+      : "";
+  }
+  // 官方中文简介(Bangumi)加载状态提示
+  function bgmStatusHtml() {
+    if (state.settings.desc !== "official") return "";
+    var s = state.bgmStatus;
+    if (s === "loading") return esc(t("bgmLoading"));
+    if (s && s.indexOf("ok:") === 0) return "✅ " + esc(t("bgmOk")) + " " + s.slice(3) + " " + esc(t("bgmUnit"));
+    if (s === "fail") return "⚠️ " + esc(t("bgmFail"));
+    return "";
+  }
+
+  // ==================== 设置面板 ====================
+  function segHtml(defs, current) {
+    return defs.map(function (d) {
+      return '<button data-v="' + d[0] + '" class="' + (current === d[0] ? "on" : "") + '">' + esc(d[1]) + "</button>";
+    }).join("");
+  }
+  function renderSettings() {
+    el.setToggle.title = t("setTip");
+    el.setPanel.style.display = state.showSettings ? "" : "none";
+    el.lblUi.textContent = t("setUi");
+    el.lblTitle.textContent = t("setTitle");
+    el.lblDesc.textContent = t("setDesc");
+    el.lblProxy.textContent = t("setProxy");
+    if (document.activeElement !== el.setProxy) el.setProxy.value = state.settings.proxy || "";
+    el.setProxy.placeholder = t("proxyPh");
+    el.setUi.innerHTML = segHtml([["zh", "中文"], ["en", "English"], ["ja", "日本語"]], state.settings.ui);
+    el.setTitle.innerHTML = segHtml([["native", t("tNative")], ["romaji", t("tRomaji")], ["english", t("tEnglish")]], state.settings.title);
+    el.setDesc.innerHTML = segHtml([
+      ["official", t("dOfficial")], ["mt", t("dMt")], ["raw", t("dRaw")], ["ja", t("dJa")]
+    ], state.settings.desc);
+    [["ui", el.setUi], ["title", el.setTitle], ["desc", el.setDesc]].forEach(function (pair) {
+      var key = pair[0], node = pair[1];
+      Array.prototype.forEach.call(node.querySelectorAll("button"), function (b) {
+        b.onclick = function () {
+          state.settings[key] = b.getAttribute("data-v");
+          saveSettings();
+          if (key === "ui") applyStaticText();
+          if (key === "desc" && state.settings.desc === "official") loadBgmCalendar();
+          render();
+        };
+      });
+    });
+  }
+  function applyStaticText() {
+    document.documentElement.lang = state.settings.ui === "zh" ? "zh-CN" : (state.settings.ui === "ja" ? "ja" : "en");
+    el.hTitle.textContent = t("title");
+    el.hSub.textContent = t("sub");
+    el.footNote.textContent = t("foot");
+    el.refreshBtn.textContent = t("refresh");
+    el.dlWin.textContent = t("dlWin");
+    el.dlApk.textContent = t("dlApk");
+    el.search.placeholder = t("search");
+    updateFavBar();
+  }
+
+  // ==================== 渲染 ====================
+  function render() {
+    applyStaticText();
+    renderSettings();
+
+    el.siteChips.innerHTML = SITES.map(function (s) {
+      return '<a class="chip" href="' + esc(s.url) + '" target="_blank" rel="noreferrer">' + esc(s.name) + '<small>↗</small></a>';
+    }).join("");
+
+    el.segMode.innerHTML = segHtml([["week", t("modeWeek")], ["type", t("modeType")]], state.mode);
+    Array.prototype.forEach.call(el.segMode.querySelectorAll("button"), function (b) {
+      b.onclick = function () { state.mode = b.getAttribute("data-v"); render(); };
+    });
+    el.seg.innerHTML = segHtml([["all", t("all")], ["ri", t("ri")], ["guo", t("guo")]], state.filter);
+    Array.prototype.forEach.call(el.seg.querySelectorAll("button"), function (b) {
+      b.onclick = function () { state.filter = b.getAttribute("data-v"); render(); };
+    });
+
+    setSrc(state.source, state.source ? t("srcHint") : "");
+    var bsHtml = bgmStatusHtml();
+    if (bsHtml) el.srcRow.innerHTML += (el.srcRow.innerHTML ? " &nbsp;·&nbsp; " : "") + bsHtml;
+
+    var q = state.query.toLowerCase();
+    function keep(it) {
+      if (state.filter === "ri" && it.kind !== "ri") return false;
+      if (state.filter === "guo" && it.kind !== "guo") return false;
+      if (q && searchText(it).indexOf(q) < 0) return false;
+      return true;
+    }
+    var shown;
+    if (state.onlyFav) {
+      shown = Object.keys(state.favs).map(function (k) { return favToItem(state.favs[k]); }).filter(keep);
+    } else {
+      shown = state.items.filter(keep);
+    }
+
+    var container = el.list;
+    if (!shown.length) {
+      container.innerHTML = state.onlyFav
+        ? '<div class="msg">' + esc(t("noFav")) + "</div>"
+        : (state.items.length ? '<div class="msg">' + esc(t("noMatch")) + "</div>"
+          : '<div class="msg">' + esc(t("noData")) + "</div>");
+      bindCards();
+      return;
+    }
+    container.innerHTML = (state.mode === "type" && !state.onlyFav) ? renderByType(shown) : renderByWeek(shown);
+    bindCards();
+  }
+
+  function bindCards() {
+    var container = el.list;
+    Array.prototype.forEach.call(container.querySelectorAll("[data-expand]"), function (b) {
+      b.onclick = function () {
+        var id = b.getAttribute("data-expand");
+        state.expanded[id] = !state.expanded[id];
+        render();
+      };
+    });
+    Array.prototype.forEach.call(container.querySelectorAll("[data-fav]"), function (b) {
+      b.onclick = function () {
+        var id = b.getAttribute("data-fav");
+        if (state.onlyFav) {
+          if (state.favs[id]) { delete state.favs[id]; saveFavs(); render(); }
+          return;
+        }
+        var live = findItemById(id);
+        if (live) toggleFav(live);
+      };
+    });
+  }
+
+  function favToItem(f) {
+    return {
+      id: f.id, _snapshot: true,
+      kind: f.kind || "", kindLabel: f.kindLabel || "",
+      tNative: f.title || "", tRomaji: "", tEnglish: "",
+      title: f.title || "?", titleSub: f.titleSub || "",
+      cover: f.cover || "", score: null, studio: "", desc: "", genresRaw: [],
+      siteUrl: f.siteUrl || f.watchUrl || "", seasonId: f.seasonId || null,
+      dayIdx: null, clock: "", nextEp: null, untilDays: null, epText: ""
+    };
+  }
+  function findItemById(id) {
+    for (var i = 0; i < state.items.length; i++) {
+      if (state.items[i].seasonId && ("s" + state.items[i].seasonId) === id) return state.items[i];
+      if (state.items[i].id === id) return state.items[i];
+    }
+    return null;
+  }
+
+  function renderByWeek(shown) {
+    var byDay = {};
+    shown.forEach(function (it) {
+      var k = it.dayIdx == null ? 7 : it.dayIdx;
+      (byDay[k] = byDay[k] || []).push(it);
+    });
+    var now = new Date();
+    var todayIdx = (now.getDay() + 6) % 7;
+    var W = weekNames();
+    var html = "", count = 0;
+    [0, 1, 2, 3, 4, 5, 6, 7].forEach(function (k) {
+      var items = byDay[k];
+      if (!items) return;
+      items.sort(function (a, b) {
+        if (a.clock === b.clock) return displayTitle(a).main.localeCompare(displayTitle(b).main);
+        return a.clock < b.clock ? -1 : 1;
+      });
+      var isToday = k === todayIdx;
+      count += items.length;
+      var label = (k === 7) ? t("ongoing") : W[k];
+      html += '<div class="day"><span class="dn' + (isToday ? " today" : "") + '">' +
+        (isToday ? esc(t("today")) + " · " : "") + esc(label) + "</span>" +
+        '<span class="dm">' + items.length + " " + esc(t("unit")) + "</span></div>";
+      items.forEach(function (it) { html += cardHtml(it); });
+    });
+    var note = state.filter === "all" ? t("mixed") : (state.filter === "ri" ? t("onlyRi") : t("onlyGuo"));
+    return '<div style="color:var(--sub);font-size:12.5px;margin-top:4px">' + esc(t("totalPre")) + " " + count + " " +
+      esc(t("unit")) + " · " + esc(note) + "</div>" + html;
+  }
+
+  function renderByType(shown) {
+    var kinds = state.filter === "ri" ? [["ri", t("ri")]]
+      : state.filter === "guo" ? [["guo", t("guo")]]
+        : [["ri", t("ri")], ["guo", t("guo")]];
+    var html = "", total = 0;
+    kinds.forEach(function (pair) {
+      var kind = pair[0], kindLabel = pair[1];
+      var list = shown.filter(function (it) { return it.kind === kind; });
+      if (!list.length) return;
+      var groups = {};
+      list.forEach(function (it) {
+        var g = mainGenreRaw(it);
+        (groups[g] = groups[g] || []).push(it);
+      });
+      var keys = Object.keys(groups).sort(function (a, b) {
+        var ia = GENRE_ORDER.indexOf(a), ib = GENRE_ORDER.indexOf(b);
+        if (ia === -1) ia = 999;
+        if (ib === -1) ib = 999;
+        return ia - ib;
+      });
+      html += '<div class="sect"><span>' + esc(kindLabel) + '</span><span class="scount">' + list.length + " " + esc(t("unit")) + "</span></div>";
+      keys.forEach(function (g) {
+        var items = groups[g].sort(function (a, b) {
+          var ka = a.dayIdx == null ? 7 : a.dayIdx, kb = b.dayIdx == null ? 7 : b.dayIdx;
+          if (ka !== kb) return ka - kb;
+          if (a.clock === b.clock) return displayTitle(a).main.localeCompare(displayTitle(b).main);
+          return a.clock < b.clock ? -1 : 1;
+        });
+        total += items.length;
+        html += '<div class="grp"><span>' + esc(genreLabel(g)) + '</span><span class="gcount">' + items.length + " " + esc(t("unit")) + "</span></div>";
+        items.forEach(function (it) { html += cardHtml(it); });
+      });
+    });
+    return '<div style="color:var(--sub);font-size:12.5px;margin-top:4px">' + esc(t("totalPre")) + " " + total + " " +
+      esc(t("unit")) + " · " + esc(t("splitNote")) + "</div>" + html;
+  }
+
+  function metaHtml(it) {
+    if (it._snapshot) return esc(t("snap"));
+    var W = weekNames();
+    if (it.dayIdx != null && (it.clock || it.nextEp)) {
+      var parts = [esc(t("est")) + ' <b>' + esc(W[it.dayIdx]) + (it.clock ? " " + esc(it.clock) : "") + "</b>"];
+      if (it.nextEp) parts.push(esc(t("epN")) + " <b>" + it.nextEp + "</b> " + esc(t("epUnit")));
+      if (it.untilDays != null && it.untilDays >= 0) {
+        parts.push(it.untilDays === 0 ? " · " + esc(t("justToday")) : " · " + esc(t("inDays")) + " " + (it.untilDays + 1) + " " + esc(t("daysLater")));
+      }
+      return parts.join("");
+    }
+    if (it.epText) return esc(t("upd")) + " " + esc(it.epText);
+    return esc(t("ongoing"));
+  }
+
+  function cardHtml(it) {
+    var id = it.id;
+    var favKey = favId(it);
+    var isFav = !!state.favs[favKey];
+    var expanded = !!state.expanded[id];
+    var dt = displayTitle(it);
+    var kindLabel = it.kind === "guo" ? t("guo") : (it.kind === "ri" ? t("ri") : (it.kindLabel || ""));
+    var tags = ['<span class="tag ' + it.kind + '">' + esc(kindLabel) + "</span>"];
+    if (isFav) tags.push('<span class="tag now">★' + esc(t("faved")) + "</span>");
+    if (it.score) tags.push('<span class="tag">' + esc(t("score")) + " " + it.score + "</span>");
+    if (it.studio) tags.push('<span class="tag">' + esc(it.studio) + "</span>");
+    (it.genresRaw || []).slice(0, 3).forEach(function (g) {
+      tags.push('<span class="tag">' + esc(genreLabel(g)) + "</span>");
+    });
+    if (it.epText) tags.push('<span class="tag">' + esc(it.epText) + "</span>");
+
+    var links = extSearch(it.title);
+    var watchLink = it.seasonId
+      ? "https://www.bilibili.com/bangumi/play/ss" + it.seasonId
+      : (it.siteUrl || "https://anilist.co");
+
+    var detail = "";
+    if (it.desc) {
+      var R = resolveDesc(it, id, expanded);
+      var mtTag = R.tag ? '<span class="tag now">' + esc(R.tag) + "</span>" : "";
+      var translating = R.translating ? '<span class="tag">' + esc(t("mtLoading")) + "</span>" : "";
+      detail = '<div class="desc' + (expanded ? "" : " clamp") + '">' + esc(R.text) + "</div>" +
+        '<div class="ext"><button data-expand="' + id + '">' + esc(expanded ? t("collapse") : t("expand")) + "</button>" +
+        mtTag + translating +
+        (it.siteUrl ? '<a href="' + esc(it.siteUrl) + '" target="_blank" rel="noreferrer">' + esc(t("origin")) + " ↗</a>" : "") +
+        '<a href="' + esc(links.bangumi) + '" target="_blank" rel="noreferrer">Bangumi ↗</a>' +
+        "</div>" + platformRow(it);
+    } else {
+      detail = '<div class="ext"><button data-expand="' + id + '">' + esc(t("intro")) + "</button>" +
+        '<a href="' + esc(links.bangumi) + '" target="_blank" rel="noreferrer">Bangumi ↗</a>' +
+        '<a href="' + esc(links.anilist) + '" target="_blank" rel="noreferrer">AniList ↗</a>' +
+        '<a href="' + esc(links.mal) + '" target="_blank" rel="noreferrer">MyAnimeList ↗</a>' +
+        "</div>" + platformRow(it);
+    }
+
+    return '<div class="card"><div class="row">' +
+      (it.cover ? '<img class="cover" src="' + esc(it.cover) + '" alt="" loading="lazy">' : "") +
+      '<div class="main">' +
+      '<p class="tt">' + esc(dt.main) +
+      (dt.sub ? ' <span style="font-size:12px;color:var(--sub);font-weight:400">' + esc(dt.sub) + "</span>" : "") +
+      "</p>" +
+      '<div class="tags">' + tags.join("") + "</div>" +
+      '<p class="meta">' + metaHtml(it) + "</p>" +
+      "</div>" +
+      '<div class="acts">' +
+      '<button class="fav' + (isFav ? " on" : "") + '" data-fav="' + esc(favKey) + '" type="button">' + (isFav ? "★" : "☆") + "</button>" +
+      '<a href="' + esc(watchLink) + '" target="_blank" rel="noreferrer">' + esc(t("watch")) + " ↗</a>" +
+      "</div></div>" + detail + "</div>";
+  }
+
+  // ==================== 事件 ====================
+  var debounce = null;
+  el.search.addEventListener("input", function () {
+    clearTimeout(debounce);
+    debounce = setTimeout(function () {
+      state.query = el.search.value.trim();
+      render();
+    }, 200);
+  });
+  el.refreshBtn.onclick = function () { loadAll(); };
+  el.setToggle.onclick = function () { state.showSettings = !state.showSettings; render(); };
+  el.setProxy.addEventListener("change", function () {
+    state.settings.proxy = el.setProxy.value.trim();
+    saveSettings();
+    // 代理变化后清掉官方简介缓存,重新拉取
+    bgmMap = null;
+    Object.keys(state.translated).forEach(function (k) {
+      if (k.indexOf("bili|") === 0) delete state.translated[k];
+    });
+    if (state.settings.desc === "official") loadBgmCalendar();
+    render();
+  });
+  el.favToggle.onclick = function () { state.onlyFav = !state.onlyFav; render(); };
+  el.favExport.onclick = function () { exportFavs(); };
+  el.favImport.onclick = function () { el.favFile.click(); };
+  el.favFile.onchange = function () {
+    if (el.favFile.files && el.favFile.files.length) importFavs(el.favFile.files[0]);
+    el.favFile.value = "";
+  };
+
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", function () {
+      navigator.serviceWorker.register("./sw.js").catch(function () {});
+    });
+  }
+
+  loadSettings();
+  loadFavs();
+  applyStaticText();
+  updateFavBar();
+  if (state.settings.desc === "official") loadBgmCalendar();
+  loadAll();
+})();
+</script>
+</body>
+</html>
